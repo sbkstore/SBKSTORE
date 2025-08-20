@@ -1,0 +1,974 @@
+
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SBK Store</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Poppins', sans-serif; }
+    .navbar-brand {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: white !important;
+    }
+    .bi-cart { color: white; cursor: pointer; font-size: 1.5rem; }
+    .cart-container { position: relative; margin-left: 10px; }
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -12px;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+    }
+    .categoria { display: none; }
+    .card-img-top { object-fit: cover; height: 200px; width: 100%; border-radius: 12px; }
+    .card { cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+    /* Flechas negras */
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon { background-image: none; }
+    .carousel-control-prev-icon::after,
+    .carousel-control-next-icon::after {
+      content: '';
+      display: inline-block;
+      width: 20px; height: 20px;
+      border-top: 3px solid black; border-right: 3px solid black;
+    }
+    .carousel-control-prev-icon::after { transform: rotate(-135deg); }
+    .carousel-control-next-icon::after { transform: rotate(45deg); }
+    /* Botón X negro */
+    .btn-close { background: none; width: 1.5rem; height: 1.5rem; opacity: 1; }
+    .btn-close::before {
+      content: '\2715';
+      font-size: 1.2rem; color: black; font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container-fluid">
+<a class="navbar-brand d-flex align-items-center" href="#">
+        SBK Store
+        <div class="cart-container" onclick="abrirCarrito()">
+<i class="bi bi-cart"></i>
+<span class="cart-badge" id="cartCount">0</span>
+</div>
+</a>
+<button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav ms-auto">
+<li class="nav-item"><a class="nav-link" href="#" onclick="mostrarCategoria('cuadros')">Cuadros</a></li>
+<li class="nav-item"><a class="nav-link" href="#" onclick="mostrarCategoria('manubrios')">Manubrios</a></li>
+<li class="nav-item"><a class="nav-link" href="#" onclick="mostrarCategoria('masas')">Masas</a></li>
+<li class="nav-item"><a class="nav-link" href="#" onclick="mostrarCategoria('horquillas')">Horquillas</a></li>
+<li class="nav-item"><a class="nav-link" href="#" onclick="mostrarCategoria('accesorios')">Accesorios Premium</a></li>
+<li class="nav-item"><a class="nav-link" href="#" onclick="mostrarCategoria('acercade')">Acerca de Nosotros</a></li></ul>
+</div>
+</div>
+</nav>
+<div class="container my-4" id="contenedorCategorias"><div class="categoria row" id="acercade">Aquí irá la información sobre nosotros.</div></div>
+<!-- Modal Producto -->
+<div aria-hidden="true" class="modal fade" id="productoModal" tabindex="-1">
+<div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="productoTitulo"></h5>
+<button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<div class="carousel slide" data-bs-ride="carousel" id="productoCarrusel">
+<div class="carousel-inner" id="productoImagenes"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#productoCarrusel" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#productoCarrusel" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+<p class="mt-3" id="productoDescripcion"></p>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Carrito -->
+<div aria-hidden="true" class="modal fade" id="carritoModal" tabindex="-1">
+<div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title">Carrito</h5>
+<button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body" id="carritoContenido">
+<p>Tu carrito está vacío.</p>
+</div>
+<div class="modal-footer">
+<hr>
+<h6>Datos del comprador</h6>
+<div class="mb-2"><input class="form-control" id="datoNombre" placeholder="Nombre"></div>
+<div class="mb-2"><input class="form-control" id="datoApellido" placeholder="Apellido"></div>
+<div class="mb-2"><input class="form-control" id="datoDni" placeholder="DNI"></div>
+<div class="mb-2"><input class="form-control" id="datoTelefono" placeholder="Teléfono"></div>
+<div class="mb-2"><input class="form-control" id="datoDireccion" placeholder="Dirección"></div>
+<div class="mb-2"><input class="form-control" id="datoCiudad" placeholder="Ciudad"></div>
+<div class="mb-2"><input class="form-control" id="datoProvincia" placeholder="Provincia"></div>
+<div class="mb-2"><input class="form-control" id="datoCp" placeholder="Código postal"></div>
+
+
+<!-- Envío obligatorio -->
+<div class="d-flex align-items-center mb-3 p-2 border rounded bg-light">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Correo_Argentino_logo.svg/2560px-Correo_Argentino_logo.svg.png" 
+       alt="Correo Argentino" style="width:50px; height:auto; margin-right:10px;">
+  <div>
+    <strong>Envío a domicilio</strong><br>
+    Correo Argentino - $7.000 ARS
+  </div>
+</div>
+
+<button class="btn btn-success">Finalizar Compra</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+    const productos = {
+      cuadros: [
+
+        {
+          titulo: "Cuadros 1",
+          descripcion: "Cuadros de ejemplo número 1.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Cuadros+1+img1",
+            "https://via.placeholder.com/600x400?text=Cuadros+1+img2",
+            "https://via.placeholder.com/600x400?text=Cuadros+1+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Cuadros 2",
+          descripcion: "Cuadros de ejemplo número 2.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Cuadros+2+img1",
+            "https://via.placeholder.com/600x400?text=Cuadros+2+img2",
+            "https://via.placeholder.com/600x400?text=Cuadros+2+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Cuadros 3",
+          descripcion: "Cuadros de ejemplo número 3.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Cuadros+3+img1",
+            "https://via.placeholder.com/600x400?text=Cuadros+3+img2",
+            "https://via.placeholder.com/600x400?text=Cuadros+3+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Cuadros 4",
+          descripcion: "Cuadros de ejemplo número 4.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Cuadros+4+img1",
+            "https://via.placeholder.com/600x400?text=Cuadros+4+img2",
+            "https://via.placeholder.com/600x400?text=Cuadros+4+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Cuadros 5",
+          descripcion: "Cuadros de ejemplo número 5.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Cuadros+5+img1",
+            "https://via.placeholder.com/600x400?text=Cuadros+5+img2",
+            "https://via.placeholder.com/600x400?text=Cuadros+5+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Cuadros 6",
+          descripcion: "Cuadros de ejemplo número 6.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Cuadros+6+img1",
+            "https://via.placeholder.com/600x400?text=Cuadros+6+img2",
+            "https://via.placeholder.com/600x400?text=Cuadros+6+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Cuadros 7",
+          descripcion: "Cuadros de ejemplo número 7.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Cuadros+7+img1",
+            "https://via.placeholder.com/600x400?text=Cuadros+7+img2",
+            "https://via.placeholder.com/600x400?text=Cuadros+7+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Cuadros 8",
+          descripcion: "Cuadros de ejemplo número 8.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Cuadros+8+img1",
+            "https://via.placeholder.com/600x400?text=Cuadros+8+img2",
+            "https://via.placeholder.com/600x400?text=Cuadros+8+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Cuadros 9",
+          descripcion: "Cuadros de ejemplo número 9.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Cuadros+9+img1",
+            "https://via.placeholder.com/600x400?text=Cuadros+9+img2",
+            "https://via.placeholder.com/600x400?text=Cuadros+9+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Cuadros 10",
+          descripcion: "Cuadros de ejemplo número 10.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Cuadros+10+img1",
+            "https://via.placeholder.com/600x400?text=Cuadros+10+img2",
+            "https://via.placeholder.com/600x400?text=Cuadros+10+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        }
+      ],
+      manubrios: [
+
+        {
+          titulo: "Manubrios 1",
+          descripcion: "Manubrios de ejemplo número 1.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Manubrios+1+img1",
+            "https://via.placeholder.com/600x400?text=Manubrios+1+img2",
+            "https://via.placeholder.com/600x400?text=Manubrios+1+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Manubrios 2",
+          descripcion: "Manubrios de ejemplo número 2.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Manubrios+2+img1",
+            "https://via.placeholder.com/600x400?text=Manubrios+2+img2",
+            "https://via.placeholder.com/600x400?text=Manubrios+2+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Manubrios 3",
+          descripcion: "Manubrios de ejemplo número 3.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Manubrios+3+img1",
+            "https://via.placeholder.com/600x400?text=Manubrios+3+img2",
+            "https://via.placeholder.com/600x400?text=Manubrios+3+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Manubrios 4",
+          descripcion: "Manubrios de ejemplo número 4.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Manubrios+4+img1",
+            "https://via.placeholder.com/600x400?text=Manubrios+4+img2",
+            "https://via.placeholder.com/600x400?text=Manubrios+4+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Manubrios 5",
+          descripcion: "Manubrios de ejemplo número 5.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Manubrios+5+img1",
+            "https://via.placeholder.com/600x400?text=Manubrios+5+img2",
+            "https://via.placeholder.com/600x400?text=Manubrios+5+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Manubrios 6",
+          descripcion: "Manubrios de ejemplo número 6.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Manubrios+6+img1",
+            "https://via.placeholder.com/600x400?text=Manubrios+6+img2",
+            "https://via.placeholder.com/600x400?text=Manubrios+6+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Manubrios 7",
+          descripcion: "Manubrios de ejemplo número 7.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Manubrios+7+img1",
+            "https://via.placeholder.com/600x400?text=Manubrios+7+img2",
+            "https://via.placeholder.com/600x400?text=Manubrios+7+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Manubrios 8",
+          descripcion: "Manubrios de ejemplo número 8.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Manubrios+8+img1",
+            "https://via.placeholder.com/600x400?text=Manubrios+8+img2",
+            "https://via.placeholder.com/600x400?text=Manubrios+8+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Manubrios 9",
+          descripcion: "Manubrios de ejemplo número 9.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Manubrios+9+img1",
+            "https://via.placeholder.com/600x400?text=Manubrios+9+img2",
+            "https://via.placeholder.com/600x400?text=Manubrios+9+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Manubrios 10",
+          descripcion: "Manubrios de ejemplo número 10.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Manubrios+10+img1",
+            "https://via.placeholder.com/600x400?text=Manubrios+10+img2",
+            "https://via.placeholder.com/600x400?text=Manubrios+10+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        }
+      ],
+      masas: [
+
+        {
+          titulo: "Masas 1",
+          descripcion: "Masas de ejemplo número 1.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Masas+1+img1",
+            "https://via.placeholder.com/600x400?text=Masas+1+img2",
+            "https://via.placeholder.com/600x400?text=Masas+1+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Masas 2",
+          descripcion: "Masas de ejemplo número 2.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Masas+2+img1",
+            "https://via.placeholder.com/600x400?text=Masas+2+img2",
+            "https://via.placeholder.com/600x400?text=Masas+2+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Masas 3",
+          descripcion: "Masas de ejemplo número 3.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Masas+3+img1",
+            "https://via.placeholder.com/600x400?text=Masas+3+img2",
+            "https://via.placeholder.com/600x400?text=Masas+3+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Masas 4",
+          descripcion: "Masas de ejemplo número 4.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Masas+4+img1",
+            "https://via.placeholder.com/600x400?text=Masas+4+img2",
+            "https://via.placeholder.com/600x400?text=Masas+4+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Masas 5",
+          descripcion: "Masas de ejemplo número 5.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Masas+5+img1",
+            "https://via.placeholder.com/600x400?text=Masas+5+img2",
+            "https://via.placeholder.com/600x400?text=Masas+5+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Masas 6",
+          descripcion: "Masas de ejemplo número 6.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Masas+6+img1",
+            "https://via.placeholder.com/600x400?text=Masas+6+img2",
+            "https://via.placeholder.com/600x400?text=Masas+6+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Masas 7",
+          descripcion: "Masas de ejemplo número 7.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Masas+7+img1",
+            "https://via.placeholder.com/600x400?text=Masas+7+img2",
+            "https://via.placeholder.com/600x400?text=Masas+7+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Masas 8",
+          descripcion: "Masas de ejemplo número 8.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Masas+8+img1",
+            "https://via.placeholder.com/600x400?text=Masas+8+img2",
+            "https://via.placeholder.com/600x400?text=Masas+8+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Masas 9",
+          descripcion: "Masas de ejemplo número 9.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Masas+9+img1",
+            "https://via.placeholder.com/600x400?text=Masas+9+img2",
+            "https://via.placeholder.com/600x400?text=Masas+9+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Masas 10",
+          descripcion: "Masas de ejemplo número 10.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Masas+10+img1",
+            "https://via.placeholder.com/600x400?text=Masas+10+img2",
+            "https://via.placeholder.com/600x400?text=Masas+10+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        }
+      ],
+      horquillas: [
+
+        {
+          titulo: "Horquillas 1",
+          descripcion: "Horquillas de ejemplo número 1.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Horquillas+1+img1",
+            "https://via.placeholder.com/600x400?text=Horquillas+1+img2",
+            "https://via.placeholder.com/600x400?text=Horquillas+1+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Horquillas 2",
+          descripcion: "Horquillas de ejemplo número 2.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Horquillas+2+img1",
+            "https://via.placeholder.com/600x400?text=Horquillas+2+img2",
+            "https://via.placeholder.com/600x400?text=Horquillas+2+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Horquillas 3",
+          descripcion: "Horquillas de ejemplo número 3.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Horquillas+3+img1",
+            "https://via.placeholder.com/600x400?text=Horquillas+3+img2",
+            "https://via.placeholder.com/600x400?text=Horquillas+3+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Horquillas 4",
+          descripcion: "Horquillas de ejemplo número 4.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Horquillas+4+img1",
+            "https://via.placeholder.com/600x400?text=Horquillas+4+img2",
+            "https://via.placeholder.com/600x400?text=Horquillas+4+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Horquillas 5",
+          descripcion: "Horquillas de ejemplo número 5.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Horquillas+5+img1",
+            "https://via.placeholder.com/600x400?text=Horquillas+5+img2",
+            "https://via.placeholder.com/600x400?text=Horquillas+5+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Horquillas 6",
+          descripcion: "Horquillas de ejemplo número 6.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Horquillas+6+img1",
+            "https://via.placeholder.com/600x400?text=Horquillas+6+img2",
+            "https://via.placeholder.com/600x400?text=Horquillas+6+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Horquillas 7",
+          descripcion: "Horquillas de ejemplo número 7.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Horquillas+7+img1",
+            "https://via.placeholder.com/600x400?text=Horquillas+7+img2",
+            "https://via.placeholder.com/600x400?text=Horquillas+7+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Horquillas 8",
+          descripcion: "Horquillas de ejemplo número 8.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Horquillas+8+img1",
+            "https://via.placeholder.com/600x400?text=Horquillas+8+img2",
+            "https://via.placeholder.com/600x400?text=Horquillas+8+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Horquillas 9",
+          descripcion: "Horquillas de ejemplo número 9.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Horquillas+9+img1",
+            "https://via.placeholder.com/600x400?text=Horquillas+9+img2",
+            "https://via.placeholder.com/600x400?text=Horquillas+9+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Horquillas 10",
+          descripcion: "Horquillas de ejemplo número 10.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Horquillas+10+img1",
+            "https://via.placeholder.com/600x400?text=Horquillas+10+img2",
+            "https://via.placeholder.com/600x400?text=Horquillas+10+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        }
+      ],
+      accesorios: [
+
+        {
+          titulo: "Accesorios 1",
+          descripcion: "Accesorios de ejemplo número 1.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Accesorios+1+img1",
+            "https://via.placeholder.com/600x400?text=Accesorios+1+img2",
+            "https://via.placeholder.com/600x400?text=Accesorios+1+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Accesorios 2",
+          descripcion: "Accesorios de ejemplo número 2.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Accesorios+2+img1",
+            "https://via.placeholder.com/600x400?text=Accesorios+2+img2",
+            "https://via.placeholder.com/600x400?text=Accesorios+2+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Accesorios 3",
+          descripcion: "Accesorios de ejemplo número 3.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Accesorios+3+img1",
+            "https://via.placeholder.com/600x400?text=Accesorios+3+img2",
+            "https://via.placeholder.com/600x400?text=Accesorios+3+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Accesorios 4",
+          descripcion: "Accesorios de ejemplo número 4.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Accesorios+4+img1",
+            "https://via.placeholder.com/600x400?text=Accesorios+4+img2",
+            "https://via.placeholder.com/600x400?text=Accesorios+4+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Accesorios 5",
+          descripcion: "Accesorios de ejemplo número 5.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Accesorios+5+img1",
+            "https://via.placeholder.com/600x400?text=Accesorios+5+img2",
+            "https://via.placeholder.com/600x400?text=Accesorios+5+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Accesorios 6",
+          descripcion: "Accesorios de ejemplo número 6.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Accesorios+6+img1",
+            "https://via.placeholder.com/600x400?text=Accesorios+6+img2",
+            "https://via.placeholder.com/600x400?text=Accesorios+6+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Accesorios 7",
+          descripcion: "Accesorios de ejemplo número 7.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Accesorios+7+img1",
+            "https://via.placeholder.com/600x400?text=Accesorios+7+img2",
+            "https://via.placeholder.com/600x400?text=Accesorios+7+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Accesorios 8",
+          descripcion: "Accesorios de ejemplo número 8.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Accesorios+8+img1",
+            "https://via.placeholder.com/600x400?text=Accesorios+8+img2",
+            "https://via.placeholder.com/600x400?text=Accesorios+8+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Accesorios 9",
+          descripcion: "Accesorios de ejemplo número 9.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Accesorios+9+img1",
+            "https://via.placeholder.com/600x400?text=Accesorios+9+img2",
+            "https://via.placeholder.com/600x400?text=Accesorios+9+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        },
+
+        {
+          titulo: "Accesorios 10",
+          descripcion: "Accesorios de ejemplo número 10.",
+          precio: "$9.999",
+          imagenes: [
+            "https://via.placeholder.com/600x400?text=Accesorios+10+img1",
+            "https://via.placeholder.com/600x400?text=Accesorios+10+img2",
+            "https://via.placeholder.com/600x400?text=Accesorios+10+img3",
+            "https://via.placeholder.com/600x400?text=Extra+img4",
+            "https://via.placeholder.com/600x400?text=Extra+img5",
+            "https://via.placeholder.com/600x400?text=Extra+img6"
+          ]
+        }
+      ]
+
+    };
+
+    let carrito = [];
+
+    function renderCategorias() {
+      const contenedor = document.getElementById("contenedorCategorias");
+      for (let categoria in productos) {
+        const div = document.createElement("div");
+        div.id = categoria;
+        div.className = "categoria row row-cols-2 g-4";
+        
+        productos[categoria].forEach((prod, index) => {
+          div.innerHTML += `
+            <div class="col">
+              <div class="card h-100">
+                <img class="card-img-top" src="${prod.imagenes[0]}" alt="${prod.titulo}" onclick="abrirModal('${categoria}', ${index})">
+                <div class="card-body">
+                  <h5 class="card-title">${prod.titulo}</h5>
+                  <p class="card-text text-success fw-bold">${prod.precio}</p>
+                  <button class="btn btn-primary w-100" onclick="agregarAlCarrito('${categoria}', ${index})">Agregar al carrito</button>
+                </div>
+              </div>
+            </div>`;
+        });
+
+        contenedor.appendChild(div);
+      }
+    }
+
+    function mostrarCategoria(cat) {
+      document.querySelectorAll('.categoria').forEach(c => c.style.display = "none");
+      document.getElementById(cat).style.display = "flex";
+      document.getElementById(cat).style.flexWrap = "wrap";
+    }
+
+    function abrirModal(cat, index) {
+      const prod = productos[cat][index];
+      document.getElementById("productoTitulo").innerText = prod.titulo;
+      document.getElementById("productoDescripcion").innerText = prod.descripcion;
+
+      const cont = document.getElementById("productoImagenes");
+      cont.innerHTML = "";
+      prod.imagenes.forEach((img, i) => {
+        cont.innerHTML += `
+          <div class="carousel-item ${i === 0 ? 'active' : ''}">
+            <img src="${img}" class="d-block w-100" alt="${prod.titulo} imagen ${i+1}">
+          </div>`;
+      });
+
+      const modal = new bootstrap.Modal(document.getElementById("productoModal"));
+      modal.show();
+    }
+
+    function agregarAlCarrito(cat, index) {
+      const prod = productos[cat][index];
+      carrito.push(prod);
+      document.getElementById("cartCount").innerText = carrito.length;
+      actualizarCarrito();
+    }
+
+    function abrirCarrito() {
+      const modal = new bootstrap.Modal(document.getElementById("carritoModal"));
+      modal.show();
+    }
+
+    function actualizarCarrito() {
+      const cont = document.getElementById("carritoContenido");
+      if (carrito.length === 0) {
+        cont.innerHTML = "<p>Tu carrito está vacío.</p>";
+        return;
+      }
+      cont.innerHTML = "<ul class='list-group'>";
+      carrito.forEach((item, i) => {
+        cont.innerHTML += `
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            ${item.titulo} - ${item.precio}
+            <button class="btn btn-sm btn-danger" onclick="eliminarDelCarrito(${i})">X</button>
+          </li>`;
+      });
+      cont.innerHTML += "</ul>";
+    }
+
+    function eliminarDelCarrito(i) {
+      carrito.splice(i, 1);
+      document.getElementById("cartCount").innerText = carrito.length;
+      actualizarCarrito();
+    }
+
+    renderCategorias();
+    mostrarCategoria('cuadros');
+
+// ---- Manejo de datos personales ----
+const campos = ['datoNombre','datoApellido','datoDni','datoTelefono','datoDireccion','datoCiudad','datoProvincia','datoCp'];
+
+function cargarDatosPersonales(){
+  campos.forEach(id => {
+    let valor = localStorage.getItem(id) || "";
+    document.getElementById(id).value = valor;
+    document.getElementById(id).addEventListener('input', function(){
+      localStorage.setItem(id, this.value);
+    });
+  });
+}
+
+// Llamar al cargar modal
+document.getElementById('carritoModal').addEventListener('shown.bs.modal', cargarDatosPersonales);
+
+// Guardar carrito en localStorage al finalizar compra
+document.querySelector('#carritoModal .btn-success').addEventListener('click', function(){
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  localStorage.setItem("envioPrecio", 7000);
+  window.location.href = "pago.html";
+});
+
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

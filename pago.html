@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Elegir Medio de Pago</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Poppins', sans-serif; background-color:#f8f9fa; }
+    .card-option { cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card-option:hover { transform: translateY(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+</style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container-fluid">
+<a class="navbar-brand d-flex align-items-center" href="#">SBK Store</a>
+<button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+</div>
+</nav>
+<div class="container my-5">
+<h2 class="text-center mb-4">Elige tu método de pago</h2>
+<div class="row g-4 justify-content-center">
+<div class="col-md-5">
+<div class="card card-option h-100">
+<div class="card-body text-center">
+<i class="bi bi-bank" style="font-size:3rem;"></i>
+<h5 class="card-title mt-3">Transferencia Bancaria</h5>
+<p class="card-text">Alias: sbk.store.mp<br/>CBU: 0000003100098765432100</p>
+<!-- Botón abre modal -->
+<button class="btn btn-success w-100" data-bs-target="#confirmarTransferenciaModal" data-bs-toggle="modal">
+            Ya transferí
+          </button>
+</div>
+</div>
+</div>
+<div class="col-md-5">
+<div class="card card-option h-100">
+<div class="card-body text-center">
+<i class="bi bi-credit-card" style="font-size:3rem;"></i>
+<h5 class="card-title mt-3">Pago con Tarjeta</h5>
+<p class="card-text">Utiliza nuestra pasarela segura para abonar con tu tarjeta.</p>
+<a class="btn btn-primary w-100" href="pago-tarjeta-rechazo-animado.html">Ir a pagar con tarjeta</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal de confirmación -->
+<div class="modal fade" id="confirmarTransferenciaModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content shadow-lg rounded-4">
+<div class="modal-header bg-success text-white">
+<h5 class="modal-title"><i class="bi bi-bank"></i> Confirmar transferencia</h5>
+<button class="btn-close btn-close-white" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<p class="mb-3">¿Ya realizaste la transferencia? Si es así, confirma y nos pondremos en contacto con los datos de tu compra.</p>
+<!-- Resumen de compra moderno -->
+<div class="card border-0 shadow-sm mb-3">
+<div class="card-body">
+<h6 class="fw-bold mb-2">Resumen de tu compra</h6>
+<ul class="list-group list-group-flush small" id="resumenProductos"></ul>
+<hr/>
+<p class="mb-1"><strong>Envío:</strong> Correo Argentino - $7000</p>
+<p class="fw-bold text-primary mb-0">Total: $<span id="resumenTotal"></span></p>
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
+<button class="btn btn-success" id="btnConfirmarTransferencia" type="button">Confirmar</button>
+</div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+// Confirmar pago con SweetAlert y PDF
+document.getElementById("btnConfirmarTransferencia").addEventListener("click", function() {
+  Swal.fire({
+    icon: 'success',
+    title: '¡Pago confirmado!',
+    text: 'Tu pago será verificado. Mientras tanto puedes descargar tu factura.',
+    confirmButtonText: 'Descargar Factura',
+    confirmButtonColor: '#28a745',
+    customClass: { confirmButton: 'btn btn-success' },
+    buttonsStyling: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      generarFacturaPDF();
+    }
+  });
+  bootstrap.Modal.getInstance(document.getElementById("confirmarTransferenciaModal")).hide();
+});
+
+// Función PDF con ESTADO pendiente, WhatsApp y aviso en index
+function generarFacturaPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const fecha = new Date();
+  const fechaStr = fecha.toLocaleDateString() + " " + fecha.toLocaleTimeString();
+  const codigoPedido = "SBK" + Math.floor(100000 + Math.random() * 900000);
+
+  // === Guardar pedidoPendiente en localStorage ===
+  const expira = new Date(fecha.getTime() + 10 * 60000).toISOString();
+  const carrito = JSON.parse(localStorage.getItem("carrito")) || [{titulo:"Ejemplo Producto", precio:"$10.000"}];
+  const comprador = {};
+  const campos = ["datoNombre","datoApellido","datoDni","datoTelefono","datoDireccion","datoCiudad","datoProvincia","datoCp"];
+  campos.forEach(id => comprador[id] = localStorage.getItem(id) || "-");
+  const pedidoPendiente = { codigo: codigoPedido, carrito, comprador, fecha: fecha.toISOString(), expira };
+  localStorage.setItem("pedidoPendiente", JSON.stringify(pedidoPendiente));
+
+  // === Encabezado negro ===
+  doc.setFillColor(0, 0, 0);
+  doc.rect(0, 0, 220, 25, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(20);
+  doc.setTextColor(255,255,255);
+  doc.text("SBK Store - Factura", 105, 17, { align: "center" });
+
+  // === Estado pendiente en rojo ===
+  doc.setTextColor(200,0,0);
+  doc.setFontSize(14);
+  doc.text("ESTADO: PAGO PENDIENTE", 105, 35, { align: "center" });
+
+  doc.setTextColor(50);
+  doc.setFontSize(11);
+  doc.text(`Fecha: ${fechaStr}`, 20, 50);
+  doc.text(`N° Pedido: ${codigoPedido}`, 150, 50);
+
+  doc.setDrawColor(200);
+  doc.line(20, 55, 190, 55);
+
+  doc.setFontSize(13);
+  doc.setTextColor(20);
+  doc.text("Detalle de compra", 20, 65);
+
+  let startY = 75;
+  doc.setFontSize(11);
+  doc.setFillColor(240);
+  doc.rect(20, startY, 170, 8, "F");
+  doc.text("Producto", 22, startY+6);
+  doc.text("Precio", 160, startY+6);
+
+  startY += 12;
+  let total = 0;
+  carrito.forEach(p => {
+    doc.text(p.titulo, 22, startY);
+    doc.text(p.precio, 160, startY);
+    total += parseFloat(p.precio.replace(/[^0-9]/g,""));
+    startY += 8;
+  });
+
+  doc.line(20, startY, 190, startY);
+  startY += 10;
+  doc.setFont("helvetica","bold");
+  doc.text(`Total: $${total}`, 140, startY);
+
+  startY += 20;
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(13);
+  doc.text("Datos del Cliente", 20, startY);
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(11);
+  startY += 10;
+
+  const cliente = {
+    Nombre: localStorage.getItem("datoNombre") || "Juan",
+    DNI: localStorage.getItem("datoDni") || "12345678",
+    Direccion: localStorage.getItem("datoDireccion") || "Av. Siempre Viva 742",
+    Telefono: localStorage.getItem("datoTelefono") || "+54 9 11 2345 6789",
+    Tipo: "Consumidor Final - B"
+  };
+
+  Object.keys(cliente).forEach(k => {
+    doc.text(`${k}: ${cliente[k]}`, 22, startY);
+    startY += 6;
+  });
+
+  // WhatsApp texto: palabra negra + número verde
+  startY += 15;
+  doc.setFontSize(12);
+  doc.setTextColor(0,0,0);
+  doc.text("WHATSAPP:", 20, startY);
+  doc.setTextColor(0,150,0);
+  doc.textWithLink("+54 2477 000000", 55, startY, { url: "https://wa.me/542477000000" });
+
+  // Footer
+  doc.setFontSize(10);
+  doc.setTextColor(100);
+  doc.text("Gracias por tu compra en SBK Store", 105, 280, { align: "center" });
+
+  doc.save(`Factura_${codigoPedido}.pdf`);
+}
+</script>
+
+</body>
+</html>

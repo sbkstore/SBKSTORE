@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBK Store - Inicio</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+  body { font-family: 'Poppins', sans-serif; background:#f8f9fb; color:#222; overflow-x:hidden; }
+  .navbar-brand { font-weight:800; font-size:1.8rem; color:white !important; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(to right, rgba(0,0,0,0.6), rgba(0,0,0,0.4)), 
+                url('https://images.unsplash.com/photo-1529421308411-02797f1f9b0d') center/cover no-repeat;
+    height: 100vh; display:flex; align-items:center; justify-content:center; text-align:center; color:#fff;
+  }
+  .hero h1 { font-size:3.5rem; font-weight:800; margin-bottom:20px; animation:fadeDown 1s ease; }
+  .hero p { font-size:1.3rem; margin-bottom:25px; animation:fadeDown 1.3s ease; }
+  .btn-cta {
+    background:#27ae60; border:none; padding:14px 36px; font-weight:600;
+    border-radius:40px; color:#fff; transition:all .3s ease; animation:fadeUp 1.6s ease;
+  }
+  .btn-cta:hover { background:#219150; transform:translateY(-2px); }
+
+  @keyframes fadeDown { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
+  @keyframes fadeUp { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+
+  /* TITULOS */
+  .section-title { font-weight:700; text-align:center; margin:80px 0 50px; font-size:2rem; }
+
+  /* CATEGORÍAS */
+  .categorias-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:35px;
+  }
+  .categoria-card {
+    position:relative; border-radius:22px; overflow:hidden; cursor:pointer;
+    height:240px; box-shadow:0 8px 20px rgba(0,0,0,0.08); transition:all .4s ease;
+  }
+  .categoria-card img { width:100%; height:100%; object-fit:cover; transition:transform .6s ease; }
+  .categoria-card:hover img { transform:scale(1.1); }
+  .categoria-overlay {
+    position:absolute; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:600; font-size:1.3rem; letter-spacing:1px;
+  }
+
+  /* EXPERIENCIA */
+  .experiencia { background:linear-gradient(135deg,#ffffff,#f4f7f9); padding:100px 0; margin-top:100px; }
+  .experiencia h2 { text-align:center; font-weight:700; margin-bottom:60px; font-size:2.2rem; }
+  .experiencia .col { text-align:center; padding:25px; transition:all .4s ease; }
+  .experiencia .col:hover { transform:translateY(-10px); }
+  .experiencia i { font-size:2.8rem; color:#27ae60; margin-bottom:18px; transition:.3s; }
+  .experiencia h5 { font-weight:600; margin-bottom:12px; }
+  .experiencia p { color:#555; font-size:0.95rem; }
+
+  /* CONFIANZA */
+  .confianza { background:#fff; padding:70px 0; margin-top:80px; box-shadow:0 -4px 20px rgba(0,0,0,0.05); }
+  .confianza .col { text-align:center; padding:20px; transition:all .4s ease; }
+  .confianza .col:hover { transform:translateY(-8px); }
+  .confianza i { font-size:2.5rem; color:#27ae60; margin-bottom:12px; }
+
+  /* FOOTER */
+  footer { margin-top:0; background:#222; color:#bbb; padding:60px 0 30px; }
+  footer h6 { color:#fff; font-weight:700; margin-bottom:15px; }
+  footer a { color:#bbb; text-decoration:none; display:block; margin-bottom:8px; transition:.2s; }
+  footer a:hover { color:#fff; }
+  .footer-bottom { text-align:center; margin-top:30px; font-size:0.9rem; color:#777; }
+
+  /* ANIMACIONES DE SCROLL */
+  .reveal { opacity:0; transform:translateY(40px); transition:all 0.8s ease; }
+  .reveal.active { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="inicio.html">SBK Store</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link active" href="inicio.html">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#cuadros">Cuadros</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#manubrios">Manubrios</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#masas">Masas</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#horquillas">Horquillas</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#accesorios">Accesorios</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#bicicletas">Bicicletas</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#acercade">Acerca de Nosotros</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div>
+    <h1>Potencia tu próxima aventura</h1>
+    <p>Bicicletas, repuestos y accesorios premium en un solo lugar</p>
+    <a href="index.html#cuadros" class="btn btn-cta">Explorar Productos</a>
+  </div>
+</section>
+
+<div class="container reveal">
+  <h2 class="section-title">Categorías destacadas</h2>
+  <div class="categorias-grid">
+    <div class="categoria-card" onclick="location.href='index.html#cuadros'">
+      <img src="https://images.unsplash.com/photo-1520975922071-1e6eae32e8b8" alt="Cuadros">
+      <div class="categoria-overlay">Cuadros</div>
+    </div>
+    <div class="categoria-card" onclick="location.href='index.html#manubrios'">
+      <img src="https://images.unsplash.com/photo-1605712449349-1fffa66c7bb8" alt="Manubrios">
+      <div class="categoria-overlay">Manubrios</div>
+    </div>
+    <div class="categoria-card" onclick="location.href='index.html#masas'">
+      <img src="https://images.unsplash.com/photo-1629315035334-3dc32c0aaf60" alt="Masas">
+      <div class="categoria-overlay">Masas</div>
+    </div>
+    <div class="categoria-card" onclick="location.href='index.html#horquillas'">
+      <img src="https://images.unsplash.com/photo-1597764690420-efc54e9bbdcd" alt="Horquillas">
+      <div class="categoria-overlay">Horquillas</div>
+    </div>
+    <div class="categoria-card" onclick="location.href='index.html#accesorios'">
+      <img src="https://images.unsplash.com/photo-1606813908788-1b6e6bbff8eb" alt="Accesorios">
+      <div class="categoria-overlay">Accesorios Premium</div>
+    </div>
+    <div class="categoria-card" onclick="location.href='index.html#bicicletas'">
+      <img src="https://images.unsplash.com/photo-1605719088883-8d7efeb06b20" alt="Bicicletas">
+      <div class="categoria-overlay">Bicicletas</div>
+    </div>
+
+  </div>
+</div>
+
+<section class="experiencia reveal">
+  <div class="container">
+    <h2>La experiencia SBK</h2>
+    <div class="row">
+      <div class="col-md-4">
+        <i class="bi bi-lightning-charge-fill"></i>
+        <h5>Innovación</h5>
+        <p>Componentes de última generación para un rendimiento superior.</p>
+      </div>
+      <div class="col-md-4">
+        <i class="bi bi-trophy-fill"></i>
+        <h5>Rendimiento</h5>
+        <p>Productos diseñados para llevarte al siguiente nivel en cada pedaleada.</p>
+      </div>
+      <div class="col-md-4">
+        <i class="bi bi-people-fill"></i>
+        <h5>Comunidad</h5>
+        <p>Una red de ciclistas que comparten la misma pasión que vos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="confianza reveal">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <i class="bi bi-truck"></i>
+        <h6>Envíos rápidos</h6>
+        <p>Recibí tu compra en pocos días en cualquier parte del país.</p>
+      </div>
+      <div class="col-md-4">
+        <i class="bi bi-shield-check"></i>
+        <h6>Calidad garantizada</h6>
+        <p>Solo productos seleccionados con garantía oficial.</p>
+      </div>
+      <div class="col-md-4">
+        <i class="bi bi-people"></i>
+        <h6>Atención personalizada</h6>
+        <p>Estamos disponibles para ayudarte en cada paso de tu compra.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h6>Categorías</h6>
+        <a href="index.html#cuadros">Cuadros</a>
+        <a href="index.html#manubrios">Manubrios</a>
+        <a href="index.html#masas">Masas</a>
+        <a href="index.html#horquillas">Horquillas</a>
+        <a href="index.html#bicicletas">Bicicletas</a>
+      </div>
+      <div class="col-md-4">
+        <h6>Ayuda</h6>
+        <a href="#">Preguntas Frecuentes</a>
+        <a href="#">Política de envíos</a>
+        <a href="#">Política de devoluciones</a>
+      </div>
+      <div class="col-md-4">
+        <h6>Seguinos</h6>
+        <a href="#"><i class="bi bi-instagram"></i> Instagram</a>
+        <a href="#"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2025 SBK Store - Todos los derechos reservados</div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Animaciones en scroll
+  function revealOnScroll() {
+    var reveals = document.querySelectorAll('.reveal');
+    for (var i = 0; i < reveals.length; i++) {
+      var windowHeight = window.innerHeight;
+      var elementTop = reveals[i].getBoundingClientRect().top;
+      var elementVisible = 100;
+      if (elementTop < windowHeight - elementVisible) {
+        reveals[i].classList.add('active');
+      }
+    }
+  }
+  window.addEventListener('scroll', revealOnScroll);
+  window.addEventListener('load', revealOnScroll);
+</script>
+</body>
+</html>

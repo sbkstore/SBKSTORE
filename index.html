@@ -315,6 +315,18 @@
   transform: rotate(180deg);
 }
 </style>
+
+<style>
+  /* Evitar temblor en el input del modal de seguimiento */
+  #seguimientoModal .modal-dialog {
+    transition: none !important;
+  }
+  #seguimientoModal input {
+    font-size: 1rem;
+    padding: 10px;
+  }
+</style>
+
 </head>
 <body>
 <!-- Navbar -->
@@ -322,10 +334,17 @@
 <div class="container-fluid">
 <a class="navbar-brand d-flex align-items-center" href="#">
         SBK Store
-        <div class="cart-container" onclick="abrirCarrito()">
-<i class="bi bi-cart"></i>
-<span class="cart-badge" id="cartCount">0</span>
+        
+<div class="cart-container d-flex align-items-center ms-3">
+  <div onclick="abrirCarrito()" style="position:relative;">
+    <i class="bi bi-cart"></i>
+    <span class="cart-badge" id="cartCount">0</span>
+  </div>
+  <div class="ms-3" onclick="abrirSeguimiento()" style="cursor:pointer;">
+    <i class="bi bi-truck"></i>
+  </div>
 </div>
+
 </a>
 <button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
 <span class="navbar-toggler-icon"></span>
@@ -1961,7 +1980,98 @@ function generarFacturaDesdePedido(pedido) {
   doc.save(`Factura_${pedido.codigo}.pdf`);
 }
 </script>
-<script>document.addEventListener('DOMContentLoaded', function(){ mostrarCategoria('inicio'); });</script></body>
+<script>document.addEventListener('DOMContentLoaded', function(){ mostrarCategoria('inicio'); });</script>
+<!-- Botón de seguimiento al lado del carrito -->
+
+
+<!-- Modal Seguimiento -->
+<div class="modal fade" id="seguimientoModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-4 shadow">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title"><i class="bi bi-truck"></i> Seguimiento de Pedido</h5>
+        <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Ingresa tu código de pedido</label>
+          <input type="text" id="codigoPedidoInput" class="form-control" placeholder="Ej: SBK123456"/>
+        </div>
+        <button class="btn btn-success w-100 mb-4" onclick="verSeguimiento()">Ver seguimiento</button>
+
+        <!-- Tracking -->
+        <div id="trackingContainer" style="display:none;">
+          <div class="tracking d-flex justify-content-between text-center">
+            <div class="step">
+              <div id="step1" class="circle active"><i class="bi bi-credit-card"></i></div>
+              <p>Pendiente</p>
+            </div>
+            <div class="line flex-grow-1"></div>
+            <div class="step">
+              <div id="step2" class="circle"><i class="bi bi-gear"></i></div>
+              <p>Procesando</p>
+            </div>
+            <div class="line flex-grow-1"></div>
+            <div class="step">
+              <div id="step3" class="circle"><i class="bi bi-box-seam"></i></div>
+              <p>Despacho</p>
+            </div>
+            <div class="line flex-grow-1"></div>
+            <div class="step">
+              <div id="step4" class="circle"><i class="bi bi-check-circle"></i></div>
+              <p>Entregado</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .tracking .circle {
+    width: 45px; height: 45px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    background: #ddd; color: white;
+    margin: 0 auto 6px;
+  }
+  .tracking .circle.active { background: orange; }
+  .tracking .circle.done { background: #28a745; }
+  .tracking p { font-size: 0.85rem; margin: 0; }
+  .tracking .line {
+    height: 4px;
+    background: #ddd;
+    align-self: center;
+    margin: 0 4px;
+  }
+</style>
+
+<script>
+  function abrirSeguimiento(){
+    new bootstrap.Modal(document.getElementById("seguimientoModal")).show();
+  }
+
+  function verSeguimiento(){
+    const codigo = document.getElementById("codigoPedidoInput").value.trim();
+    const pedido = JSON.parse(localStorage.getItem("pedidoPendiente") || "{}");
+
+    if(pedido.codigo === codigo){
+      document.getElementById("trackingContainer").style.display = "block";
+
+      // siempre queda en "Pendiente"
+      ["step1","step2","step3","step4"].forEach(id=>{
+        document.getElementById(id).className="circle";
+      });
+      document.getElementById("step1").classList.add("active");
+    } else {
+      alert("Código inválido o vencido");
+    }
+  }
+</script>
+
+</body>
 </html>
 <style>
 .toast-alert {

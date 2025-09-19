@@ -46,7 +46,7 @@
 <div class="card-body text-center">
 <i class="bi bi-bank" style="font-size:3rem;"></i>
 <h5 class="card-title mt-3">Transferencia Bancaria</h5>
-<p class="card-text">Alias: sbk.store.mp <button id="btnAlias" class="btn btn-light btn-sm ms-2" onclick="copiarTexto('sbk.store.mp','btnAlias')"><i class="bi bi-clipboard text-dark"></i></button><br/>CBU: 0000003100098765432100 <button id="btnCbu" class="btn btn-light btn-sm ms-2" onclick="copiarTexto('0000003100098765432100','btnCbu')"><i class="bi bi-clipboard text-dark"></i></button></p>
+<p class="card-text">Alias: sbk.store.mp <span id="btnAlias" onclick="copiarTexto('sbk.store.mp','btnAlias')" style="cursor:pointer; display:inline-block; padding:6px; border-radius:8px;"><i class="bi bi-clipboard text-dark" style="font-size:1.4rem;"></i></span><br/>CBU: 0000003100098765432100 <span id="btnCbu" onclick="copiarTexto('0000003100098765432100','btnCbu')" style="cursor:pointer; display:inline-block; padding:6px; border-radius:8px;"><i class="bi bi-clipboard text-dark" style="font-size:1.4rem;"></i></span></p>
 <!-- Botón abre modal -->
 <button class="btn btn-success w-100" data-bs-target="#confirmarTransferenciaModal" data-bs-toggle="modal">
             Ya transferí
@@ -320,6 +320,7 @@ function copiarTexto(texto, btnId) {
 }
 
 function cambiarIcono(btnId) {
+  
   let btn = document.getElementById(btnId);
   if (btn) {
     let icon = btn.querySelector("i");
@@ -327,6 +328,7 @@ function cambiarIcono(btnId) {
       icon.className = "bi bi-clipboard-check text-success";
     }
   }
+
 }
 </script>
 </body>

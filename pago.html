@@ -46,7 +46,7 @@
 <div class="card-body text-center">
 <i class="bi bi-bank" style="font-size:3rem;"></i>
 <h5 class="card-title mt-3">Transferencia Bancaria</h5>
-<p class="card-text">Alias: sbk.store.mp <span id="btnAlias" onclick="copiarTexto('sbk.store.mp','btnAlias')" style="cursor:pointer; display:inline-block; padding:6px; border-radius:8px;"><i class="bi bi-clipboard text-dark" style="font-size:1.4rem;"></i></span><br/>CBU: 0000003100098765432100 <span id="btnCbu" onclick="copiarTexto('0000003100098765432100','btnCbu')" style="cursor:pointer; display:inline-block; padding:6px; border-radius:8px;"><i class="bi bi-clipboard text-dark" style="font-size:1.4rem;"></i></span></p>
+<p class="card-text">Alias: sbk.store.mp<br/>CBU: 0000003100098765432100</p>
 <!-- Botón abre modal -->
 <button class="btn btn-success w-100" data-bs-target="#confirmarTransferenciaModal" data-bs-toggle="modal">
             Ya transferí
@@ -290,47 +290,6 @@ function generarFacturaPDF() {
 }
 </script>
 
-
-<script>
-function copiarTexto(texto, btnId) {
-  let exito = false;
-
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(texto).then(() => {
-      exito = true;
-      cambiarIcono(btnId);
-    });
-  } else {
-    let input = document.createElement("input");
-    input.value = texto;
-    document.body.appendChild(input);
-    input.select();
-    input.setSelectionRange(0, 99999); // Para móviles
-    try {
-      document.execCommand("copy");
-      exito = true;
-    } catch (err) {
-      alert("No se pudo copiar: " + err);
-    }
-    document.body.removeChild(input);
-    if (exito) {
-      cambiarIcono(btnId);
-    }
-  }
-}
-
-function cambiarIcono(btnId) {
-  
-  let btn = document.getElementById(btnId);
-  if (btn) {
-    let icon = btn.querySelector("i");
-    if (icon) {
-      icon.className = "bi bi-clipboard-check text-success";
-    }
-  }
-
-}
-</script>
 </body>
 </html>
 <script>

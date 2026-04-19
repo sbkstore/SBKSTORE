@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ThisDrugs</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+  /* Botón Flotante Historial */
+.btn-pedidos-flotante {
+    position: fixed; bottom: 100px; right: 20px;
+    background-color: #1a1a1a; color: white;
+    width: 60px; height: 60px; border-radius: 50%;
+    display: none; justify-content: center; align-items: center;
+    font-size: 1.6rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 9999; cursor: pointer;
+}
+.punto-aviso { position: absolute; top: 2px; right: 2px; background: red; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; }
+
+    body { font-family: 'Poppins', sans-serif; }
+    .navbar-brand {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: white !important;
+    }
+    .bi-cart { color: white; cursor: pointer; font-size: 1.5rem; }
+    .cart-container { position: relative; margin-left: 10px; }
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -12px;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+    }
+    .categoria { display: none; }
+    .card-img-top { object-fit: cover; height: 200px; width: 100%; border-radius: 12px; }
+    .card { cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+    /* Flechas negras */
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon { background-image: none; }
+    .carousel-control-prev-icon::after,
+    .carousel-control-next-icon::after {
+      content: '';
+      display: inline-block;
+      width: 20px; height: 20px;
+      border-top: 3px solid black; border-right: 3px solid black;
+    }
+    .carousel-control-prev-icon::after { transform: rotate(-135deg); }
+    .carousel-control-next-icon::after { transform: rotate(45deg); }
+    /* Botón X negro */
+    .btn-close { background: none; width: 1.5rem; height: 1.5rem; opacity: 1; }
+    .btn-close::before {
+      content: '\2715';
+      font-size: 1.2rem; color: black; font-weight: bold;
+    }
+  </style>
+<style>
+#envioGratis.activo {
+    border: 2px solid #2e7d32 !important;
+    background-color: #e8f5e9 !important;
+    box-shadow: 0 0 10px rgba(46, 125, 50, 0.2);
+}
+.correo-inactivo {
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+</style>
+<style>
+.btn-success:disabled {
+  background-color: #e0e0e0 !important;
+  border-color: #e0e0e0 !important;
+  color: #555 !important;
+  cursor: not-allowed;
+}
+</style>
+<style>
+.card {
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  background: #fff;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #222;
+}
+.card-text {
+  font-size: 0.95rem;
+  color: #555;
+}
+.boton-agregar {
+  background: linear-gradient(135deg, #28a745, #218838);
+  color: #fff !important;
+  font-weight: bold;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: 'Poppins', sans-serif;
+  margin-top: 10px;
+}
+.boton-agregar:hover {
+  background: linear-gradient(135deg, #2ebf50, #1e7a35);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+.boton-agregar:active {
+  transform: scale(0.97);
+}
+.boton-agregar i {
+  font-size: 1.1rem;
+}
+</style>
+<style>
+/* Tarjeta de producto premium */
+.card {
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+}
+.card-img-top {
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  height: 220px;
+  object-fit: cover;
+}
+.card-body {
+  padding: 18px;
+}
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1e1e1e;
+  margin-bottom: 8px;
+}
+.card-text {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+.card-price {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #28a745;
+  margin-bottom: 12px;
+}
+/* Botón ultra premium */
+.boton-agregar {
+  background: linear-gradient(145deg, #2ecc71, #27ae60);
+  color: #fff !important;
+  font-weight: 600;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 14px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+.boton-agregar:hover {
+  background: linear-gradient(145deg, #3ddc84, #2fb86d);
+  box-shadow: 0 6px 18px rgba(39, 174, 96, 0.4);
+  transform: translateY(-2px);
+}
+.boton-agregar:active {
+  transform: scale(0.98);
+}
+.boton-agregar i {
+  font-size: 1.2rem;
+}
+</style>
+<style>
+.acerca-nosotros-section { background-color: #f1f1f1; }
+.acerca-parallax {
+  background-image: url('sbk_store_banner_horizontal_centered.png');
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 300px;
+  width: 100%;
+}
+.acerca-contenido { background-color: #f1f1f1; }
+</style>
+<style>
+.btn-whatsapp {
+  display: inline-block;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  color: #fff !important;
+  padding: 12px 28px;
+  margin: 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.btn-whatsapp:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(18, 140, 126, 0.3);
+}
+
+.btn-instagram {
+  display: inline-block;
+  background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af);
+  color: #fff !important;
+  padding: 12px 28px;
+  margin: 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.btn-instagram:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(221, 42, 123, 0.3);
+}
+</style>
+<style>
+.envio-gratis-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+.card-wrapper { position: relative; }
+</style>
+<style>
+.btn-primary, .btn-info, .btn-whatsapp, .btn-instagram {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: #fff !important;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+  width: 100%;
+  white-space: normal;
+  line-height: 1.4;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  transition: all 0.3s ease;
+}
+.btn-primary:hover, .btn-info:hover, .btn-whatsapp:hover, .btn-instagram:hover {
+  background: linear-gradient(135deg, #3ddc84, #2fb86d);
+  box-shadow: 0 6px 18px rgba(39, 174, 96, 0.4);
+  transform: translateY(-2px);
+}
+.btn-primary:active, .btn-info:active, .btn-whatsapp:active, .btn-instagram:active {
+  transform: scale(0.98);
+}
+</style>
+<style>
+.faq-section {
+  margin-top: 50px;
+}
+.faq-item {
+  border-bottom: 1px solid #ddd;
+  padding: 15px 0;
+}
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+.faq-question:hover {
+  color: #27ae60;
+}
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.4s ease;
+  opacity: 0;
+  font-size: 0.95rem;
+  margin-top: 8px;
+}
+.faq-item.active .faq-answer {
+  max-height: 200px;
+  opacity: 1;
+}
+.faq-icon {
+  transition: transform 0.3s ease;
+}
+.faq-item.active .faq-icon {
+  transform: rotate(180deg);
+}
+</style>
+
+<style>
+  /* Evitar temblor en el input del modal de seguimiento */
+  #seguimientoModal .modal-dialog {
+    transition: none !important;
+  }
+  #seguimientoModal input {
+    font-size: 1rem;
+    padding: 10px;
+  }
+</style>
+
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container-fluid">
+<a class="navbar-brand d-flex align-items-center" href="#">
+        ThisDrugs
+        
+<div class="cart-container d-flex align-items-center ms-3">
+  <div onclick="abrirCarrito()" style="position:relative;">
+    <i class="bi bi-bag"></i>
+    <span class="cart-badge" id="cartCount">0</span>
+  </div>
+  
+</div>
+
+</a>
+<button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav ms-auto">
+<li class="nav-item"><a class="nav-link" href="#" onclick="mostrarCategoria('inicio')">Inicio</a></li>
+<li class="nav-item"><a class="nav-link" href="#" onclick="mostrarCategoria('catalogo')">catalogo</a></li>
+<li class="nav-item"><a class="nav-link" href="#" onclick="mostrarCategoria('armas')">armas</a></li>   
+</div>
+</nav>
+<div class="container my-4" id="contenedorCategorias"><div class="categoria row acerca-nosotros-section" id="inicio">
+<section class="hero d-flex align-items-center justify-content-center text-center text-white" style="height:100vh; background: url('banner1.jpg') center/cover no-repeat; position: relative;">
+<div style="background: rgba(0,0,0,0.5); position: absolute; inset: 0;"></div>
+<div style="position: relative; z-index: 2;">
+<h1 class="display-3 fw-bold">Bienvenido a ThisDrugs</h1>
+<p class="lead">Tu tienda online de confianza.</p>
+<button class="btn btn-light btn-lg mt-3" onclick="document.querySelector('.navbar-toggler').click()">Ver Categorías</button>
+</div>
+</section>
+<div class="carousel slide my-5" data-bs-ride="carousel" id="carouselInicio">
+<div class="carousel-inner">
+<div class="carousel-item active">
+<img alt="Ropa 1" class="d-block w-100 rounded-3 shadow" src="banner4.jpg"/>
+<div class="carousel-caption d-none d-md-block">
+<h5>Explora Ropa</h5>
+<p>Modelos modernos y resistentes</p>
+</div>
+</div>
+<div class="carousel-item">
+<img alt="Ropa 2" class="d-block w-100 rounded-3 shadow" src="banner2.jpg"/>
+<div class="carousel-caption d-none d-md-block">
+<h5>Accesorios</h5>
+<p>Todo lo que necesitas para tu bici</p>
+</div>
+</div>
+<div class="carousel-item">
+<img alt="Ropa 3" class="d-block w-100 rounded-3 shadow" src="banner3.jpg"/>
+<div class="carousel-caption d-none d-md-block">
+<h5>Confianza y Calidad</h5>
+<p>Los mejores prendas y atención personalizada</p>
+</div>
+</div>
+</div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carouselInicio" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carouselInicio" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+
+<div class="container my-5 text-center">
+<h2 class="fw-bold mb-4">¿Por qué elegirnos?</h2>
+<div class="row g-4">
+<div class="col-md-4">
+<div class="p-4 border rounded-3 shadow-sm h-100">
+<i class="bi bi-truck display-4 text-dark"></i>
+<p class="mt-3">Envíos rápidos a todo el país</p>
+</div>
+</div>
+<div class="col-md-4">
+<div class="p-4 border rounded-3 shadow-sm h-100">
+<i class="bi bi-flower1 display-4 text-dark"></i>
+<p class="mt-3">la mejor calidad</p>
+</div>
+</div>
+<div class="col-md-4">
+<div class="p-4 border rounded-3 shadow-sm h-100">
+<i class="bi bi-person-check display-4 text-dark"></i>
+<p class="mt-3">Atención personalizada</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="container my-5">
+<h2 class="text-center fw-bold mb-4">Lo que dicen nuestros clientes</h2>
+<div class="carousel slide" data-bs-ride="carousel" id="carouselTestimonios">
+<div class="carousel-inner">
+<div class="carousel-item active text-center">
+<img alt="Cliente feliz" class="rounded-circle mb-3" src="cliente1.jpg" style="width:100px;height:100px;object-fit:cover;"/>
+<h5>anónimo</h5>
+<p class="text-muted">“Compré y llegó en 48 horas. Excelente atención.”</p>
+</div>
+<div class="carousel-item text-center">
+<img alt="Cliente en bici" class="rounded-circle mb-3" src="cliente2.jpg" style="width:100px;height:100px;object-fit:cover;"/>
+<h5>anónimo</h5>
+<p class="text-muted">“Me asesoraron muy bien para elegir, ¡la recomiendo totalmente!”</p>
+</div>
+<div class="carousel-item text-center">
+<img alt="Cliente rodando" class="rounded-circle mb-3" src="cliente3.jpg" style="width:100px;height:100px;object-fit:cover;"/>
+<h5>anónimo</h5>
+<p class="text-muted">“La mejor tienda online de semillas, rápido y confiable.”</p>
+</div>
+</div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carouselTestimonios" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carouselTestimonios" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div><div class="categoria row acerca-nosotros-section" id="acercade">
+<div class="acerca-contenido text-center py-5">
+<div class="container-fluid">
+<div class="row mb-4">
+<div class="col-12">
+<h2 class="fw-bold mb-3">Acerca de Nosotros</h2>
+<p class="text-muted">Ofrecemos las mejores semillas con atención personalizada y envíos rápidos en todo el país.</p>
+</div>
+</div>
+<div class="row text-start">
+<div class="col-md-4 mb-4">
+<div class="p-4 bg-white rounded shadow-sm h-100">
+<i class="bi bi-shop" style="font-size:2rem; color:#28a745;"></i>
+<h5 class="fw-bold mt-3">Quiénes Somos</h5>
+<p>Somos una tienda especializada en semillas en tendencia de alta calidad, comprometidos con la excelencia y la innovación.</p>
+</div>
+</div>
+<div class="col-md-4 mb-4">
+<div class="p-4 bg-white rounded shadow-sm h-100">
+<i class="bi bi-shield-check" style="font-size:2rem; color:#28a745;"></i>
+<h5 class="fw-bold mt-3">Nuestro Compromiso</h5>
+<p>Brindamos asesoramiento experto y productos seleccionados para garantizar la mejor experiencia en cada compra.</p>
+</div>
+</div>
+<div class="col-md-4 mb-4">
+<div class="p-4 bg-white rounded shadow-sm h-100">
+<i class="bi bi-truck" style="font-size:2rem; color:#28a745;"></i>
+<h5 class="fw-bold mt-3">Envíos y Beneficios</h5>
+<p>Realizamos envíos rápidos y seguros a todo el país, con opciones de envío gratis en compras superiores a $200.000. Entregamos tu compra en un máximo de 3 días hábiles.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<!-- Modal Producto -->
+<div aria-hidden="true" class="modal fade" id="productoModal" tabindex="-1">
+<div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="productoTitulo"></h5>
+<button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<div class="carousel slide" data-bs-ride="carousel" id="productoCarrusel">
+<div class="carousel-inner" id="productoImagenes"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#productoCarrusel" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#productoCarrusel" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+<p class="mt-3" id="productoDescripcion"></p>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Carrito -->
+<div aria-hidden="true" class="modal fade" id="carritoModal" tabindex="-1">
+<div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title">Carrito</h5>
+<button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body" id="carritoContenido">
+<p>Tu carrito está vacío.</p>
+</div>
+<div class="modal-footer">
+<hr/>
+<h6>Datos del comprador</h6>
+<div class="mb-2"><label for="datoNombre" style="font-weight:bold;">Nombre</label><input class="form-control" id="datoNombre" placeholder="Nombre"/></div>
+<div class="mb-2"><label for="datoApellido" style="font-weight:bold;">Apellido</label><input class="form-control" id="datoApellido" placeholder="Apellido"/></div>
+<div class="mb-2"><label for="datoDni" style="font-weight:bold;">DNI</label><input class="form-control" id="datoDni" inputmode="numeric" maxlength="10" placeholder="Ej: 12.345.678" type="tel"/><div class="invalid-feedback" style="display:none; color:red; font-size:0.9rem;">El DNI debe tener 8 dígitos.</div></div>
+<div class="mb-2"><label for="datoTelefono" style="font-weight:bold;">Teléfono</label><div class="input-group"><span class="input-group-text">+54</span><input class="form-control" id="datoTelefono" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" placeholder="Ej: 1123456789" type="tel"/></div><div class="invalid-feedback" style="display:none; color:red; font-size:0.9rem;">El número debe tener 10 dígitos.</div></div>
+<div class="mb-2"><label for="datoDireccion" style="font-weight:bold;">Dirección</label><input class="form-control" id="datoDireccion" placeholder="Dirección"/></div>
+<div class="mb-2"><label for="datoCiudad" style="font-weight:bold;">Ciudad</label><input class="form-control" id="datoCiudad" placeholder="Ciudad"/></div>
+<div class="mb-2"><label for="datoProvincia" style="font-weight:bold;">Provincia</label><input class="form-control" id="datoProvincia" placeholder="Provincia"/></div>
+<div class="mb-2"><label for="datoCp" style="font-weight:bold;">Código postal</label><input class="form-control" id="datoCp" inputmode="numeric" pattern="[0-9]*" placeholder="Código postal" type="tel"/></div>
+<!-- Envío obligatorio -->
+<div class="d-flex align-items-center mb-3 p-2 border rounded bg-light envio-gratis" id="envioGratis" style="display:none; transition: all 0.3s ease;"><div style="font-weight:bold; font-size:1rem; color:#2e7d32;">Envío gratis<br/><span style="font-weight:normal; font-size:0.9rem; color:#555;">Disponible para compras mayores a $200.000</span></div></div><div class="d-flex align-items-center mb-3 p-2 border rounded bg-light">
+<img alt="Correo Argentino" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqAUf9jbemuomkEtRDzlx8Px4AqX5rqMsqTw&amp;s" style="width:50px; height:auto; margin-right:10px;"/>
+<div>
+<strong>Envío a domicilio</strong><br/>
+    Correo Argentino - $7.000 ARS
+  </div>
+</div>
+<button class="btn btn-success btn-success" disabled="true">Finalizar Compra</button>
+</div>
+</div>
+</div>
+</div>
+  <script src="productos.js"></script>    
+<script src="armas.js"></script>
+<script>
+    
+
+    let carrito = [];
+
+    function renderCategorias() {
+  const contenedor = document.getElementById("contenedorCategorias");
+  
+  for (let categoria in productos) {
+    // 🛡️ SEGURIDAD: Si la categoría es 'inicio' o 'acercade', NO HACEMOS NADA.
+    // Esto evita que se borre tu banner y tus testimonios.
+    if (categoria === 'inicio' || categoria === 'acercade') continue;
+
+    const div = document.createElement("div");
+    div.id = categoria;
+    div.className = "categoria row row-cols-2 g-4";
+    
+    productos[categoria].forEach((prod, index) => {
+      // 🏷️ ETIQUETA EDITABLE: Se crea solo si existe en el .js
+      const badgeHtml = prod.etiqueta 
+        ? `<span class="badge-epico">${prod.etiqueta}</span>` 
+        : '';
+
+      div.innerHTML += `
+        <div class="col">
+          <div class="card h-100 position-relative">
+            ${badgeHtml}
+            <img class="card-img-top" src="${prod.imagenes[0]}" alt="${prod.titulo}" onclick="abrirModal('${categoria}', ${index})">
+            <div class="card-body">
+              <h5 class="card-title">${prod.titulo}</h5>
+              <p class="card-text text-success fw-bold">${prod.precio}</p>
+              <button class="btn btn-primary w-100" onclick="agregarAlCarrito('${categoria}', ${index})">Agregar al carrito</button>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    contenedor.appendChild(div);
+  }
+}
+
+
+    function mostrarCategoria(cat) {
+      document.querySelectorAll('.categoria').forEach(c => c.style.display = "none");
+      document.getElementById(cat).style.display = "flex";
+      document.getElementById(cat).style.flexWrap = "wrap";
+    }
+
+    function abrirModal(cat, index) {
+      const prod = productos[cat][index];
+      document.getElementById("productoTitulo").innerText = prod.titulo;
+      document.getElementById("productoDescripcion").innerText = prod.descripcion;
+
+      const cont = document.getElementById("productoImagenes");
+      cont.innerHTML = "";
+      prod.imagenes.forEach((img, i) => {
+        cont.innerHTML += `
+          <div class="carousel-item ${i === 0 ? 'active' : ''}">
+            <img src="${img}" class="d-block w-100" alt="${prod.titulo} imagen ${i+1}">
+          </div>`;
+      });
+
+      const modal = new bootstrap.Modal(document.getElementById("productoModal"));
+      modal.show();
+    }
+
+    function agregarAlCarrito(cat, index) {
+      const prod = productos[cat][index];
+      carrito.push(prod);
+      document.getElementById("cartCount").innerText = carrito.length;
+      actualizarCarrito();
+    }
+
+    function abrirCarrito() {
+      const modal = new bootstrap.Modal(document.getElementById("carritoModal"));
+      modal.show();
+    }
+
+    function actualizarCarrito() {
+      const cont = document.getElementById("carritoContenido");
+      if (carrito.length === 0) {
+        cont.innerHTML = "<p>Tu carrito está vacío.</p>";
+        return;
+      }
+      cont.innerHTML = "<ul class='list-group'>";
+      carrito.forEach((item, i) => {
+        cont.innerHTML += `
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            ${item.titulo} - ${item.precio}
+            <button class="btn btn-sm btn-danger" onclick="eliminarDelCarrito(${i})">X</button>
+          </li>`;
+      });
+      cont.innerHTML += "</ul>";
+    }
+
+    function eliminarDelCarrito(i) {
+      carrito.splice(i, 1);
+      document.getElementById("cartCount").innerText = carrito.length;
+      actualizarCarrito();
+    }
+
+    renderCategorias();
+    mostrarCategoria('inicio');
+
+// ---- Manejo de datos personales ----
+const campos = ['datoNombre','datoApellido','datoDni','datoTelefono','datoDireccion','datoCiudad','datoProvincia','datoCp'];
+
+function cargarDatosPersonales(){
+  campos.forEach(id => {
+    let valor = localStorage.getItem(id) || "";
+    document.getElementById(id).value = valor;
+    document.getElementById(id).addEventListener('input', function(){
+      localStorage.setItem(id, this.value);
+    });
+  });
+}
+
+// Llamar al cargar modal
+document.getElementById('carritoModal').addEventListener('shown.bs.modal', cargarDatosPersonales);
+
+// Guardar carrito en localStorage al finalizar compra
+document.querySelector('#carritoModal .btn-success').addEventListener('click', function(){
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  localStorage.setItem("envioPrecio", 7000);
+  window.location.href = "pago.html";
+});
+
+  
+// Validación DNI con puntos automáticos
+const dniInput = document.getElementById('datoDni');
+const telefonoInput = document.getElementById('datoTelefono');
+const finalizarBtn = document.querySelector('.btn.btn-success');
+
+function validarFormulario() {
+    const telValido = telefonoInput.value.replace(/\D/g, '').length === 10;
+    const dniValido = dniInput.value.replace(/\D/g, '').length === 8;
+    finalizarBtn.disabled = !(telValido && dniValido);
+}
+
+dniInput.addEventListener('input', function() {
+    let valor = this.value.replace(/\D/g, '').slice(0, 8);
+    let formateado = valor.replace(/(\d{2})(\d{3})(\d{3})/, '$1.$2.$3');
+    this.value = formateado;
+    const feedback = this.parentElement.querySelector('.invalid-feedback');
+    if (valor.length !== 8) {
+        feedback.style.display = 'block';
+        this.classList.add('is-invalid');
+    } else {
+        feedback.style.display = 'none';
+        this.classList.remove('is-invalid');
+    }
+    validarFormulario();
+});
+
+telefonoInput.addEventListener('input', function() {
+    const valor = this.value.replace(/\D/g, '');
+    this.value = valor;
+    const feedback = this.parentElement.parentElement.querySelector('.invalid-feedback');
+    if (valor.length !== 10) {
+        feedback.style.display = 'block';
+        this.classList.add('is-invalid');
+    } else {
+        feedback.style.display = 'none';
+        this.classList.remove('is-invalid');
+    }
+    validarFormulario();
+});
+
+validarFormulario();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function actualizarEnvioGratis(total) {
+    const envioGratis = document.getElementById('envioGratis');
+    const bloques = document.querySelectorAll('.d-flex.align-items-center.mb-3.p-2.border.rounded.bg-light');
+    const correoArg = bloques[bloques.length - 1];
+    if (!envioGratis || !correoArg) return;
+    
+    if (total >= 200000) {
+        envioGratis.style.display = 'flex';
+        envioGratis.classList.add('activo');
+        correoArg.classList.add('correo-inactivo');
+    } else {
+        envioGratis.style.display = 'none';
+        envioGratis.classList.remove('activo');
+        correoArg.classList.remove('correo-inactivo');
+    }
+}
+</script><script>
+document.getElementById('datoTelefono').addEventListener('input', function() {
+    const valor = this.value.replace(/\D/g, '');
+    this.value = valor;
+    const feedback = this.parentElement.parentElement.querySelector('.invalid-feedback');
+    if (valor.length !== 10) {
+        feedback.style.display = 'block';
+        this.classList.add('is-invalid');
+    } else {
+        feedback.style.display = 'none';
+        this.classList.remove('is-invalid');
+    }
+});
+</script>
+<script>
+function validarCampos() {
+  const nombre = document.getElementById('datoNombre')?.value.trim();
+  const apellido = document.getElementById('datoApellido')?.value.trim();
+  const dni = document.getElementById('datoDni')?.value.replace(/\D/g, '');
+  const telefono = document.getElementById('datoTelefono')?.value.replace(/\D/g, '');
+  const direccion = document.getElementById('datoDireccion')?.value.trim();
+  const ciudad = document.getElementById('datoCiudad')?.value.trim();
+  const provincia = document.getElementById('datoProvincia')?.value.trim();
+  const cp = document.getElementById('datoCp')?.value.trim();
+
+  const boton = document.querySelector('.btn.btn-success');
+  if (!boton) return;
+  const valido = nombre && apellido && dni.length === 8 && telefono.length === 10 && direccion && ciudad && provincia && cp;
+
+  boton.disabled = !valido;
+  boton.classList.toggle('btn-success', valido);
+  boton.classList.toggle('btn-secondary', !valido);
+}
+
+// Revalidar al abrir el carrito
+document.getElementById('carritoModal')?.addEventListener('shown.bs.modal', validarCampos);
+
+// Revalidar cuando se edite cualquier campo
+document.querySelectorAll('#datoNombre, #datoApellido, #datoDni, #datoTelefono, #datoDireccion, #datoCiudad, #datoProvincia, #datoCp')
+  .forEach(input => input.addEventListener('input', validarCampos));
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const campos = {
+    nombre: document.getElementById("datoNombre"),
+    apellido: document.getElementById("datoApellido"),
+    dni: document.getElementById("datoDni"),
+    telefono: document.getElementById("datoTelefono"),
+    direccion: document.getElementById("datoDireccion"),
+    ciudad: document.getElementById("datoCiudad"),
+    provincia: document.getElementById("datoProvincia"),
+    cp: document.getElementById("datoCp")
+  };
+
+  const botonFinalizar = document.querySelector(".btn.btn-success");
+  botonFinalizar.disabled = true;
+
+  Object.values(campos).forEach(campo => {
+    campo.addEventListener("input", validarFormulario);
+  });
+
+  function validarFormulario() {
+    const dniValido = /^\d{8}$/.test(campos.dni.value.replace(/\D/g, ""));
+    const telValido = /^\d{10}$/.test(campos.telefono.value.replace(/\D/g, ""));
+    const camposTextoOk = campos.nombre.value.trim() &&
+                          campos.apellido.value.trim() &&
+                          campos.direccion.value.trim() &&
+                          campos.ciudad.value.trim() &&
+                          campos.provincia.value.trim() &&
+                          campos.cp.value.trim();
+
+    mostrarError(campos.dni, dniValido, "El DNI debe tener 8 dígitos.");
+    mostrarError(campos.telefono, telValido, "El número debe tener 10 dígitos.");
+
+    if (dniValido && telValido && camposTextoOk) {
+      botonFinalizar.disabled = false;
+      botonFinalizar.classList.add("btn-success");
+    } else {
+      botonFinalizar.disabled = true;
+      botonFinalizar.classList.add("btn-success");
+    }
+  }
+
+  function mostrarError(input, valido, mensaje) {
+    let feedback = input.closest(".mb-2").querySelector(".invalid-feedback");
+    if (!feedback) return;
+    feedback.textContent = mensaje;
+    feedback.style.display = valido ? "none" : "block";
+  }
+});
+</script><div id="toastContainer" style="position:fixed; top:90px; right:20px; z-index:2000;"></div>
+<script>
+function generarEstrellas(nombreProducto) {
+  const especiales = ["Viking", "Tanke", "Spy Ridder", "MT200"];
+  let rating;
+  if (especiales.some(marca => nombreProducto.toLowerCase().includes(marca.toLowerCase()))) {
+    rating = 5;
+  } else {
+    const rand = Math.random();
+    if (rand < 0.5) rating = 3;
+    else if (rand < 0.85) rating = 4;
+    else rating = 5;
+  }
+
+  let estrellas = '';
+  for (let i = 0; i < rating; i++) {
+    estrellas += '<i class="bi bi-star-fill" style="color:#ffc107;"></i>';
+  }
+  for (let i = rating; i < 5; i++) {
+    estrellas += '<i class="bi bi-star" style="color:#ffc107;"></i>';
+  }
+  return `<div class="product-rating" style="margin:6px 0;">${estrellas}</div>`;
+}
+
+function aplicarEstrellas() {
+  document.querySelectorAll(".card-title").forEach(titulo => {
+    if (!titulo.parentElement.querySelector(".product-rating")) {
+      const nombre = titulo.textContent.trim();
+      titulo.insertAdjacentHTML('afterend', generarEstrellas(nombre));
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  aplicarEstrellas(); // Aplicar al cargar el index
+  const observer = new MutationObserver(aplicarEstrellas);
+  observer.observe(document.body, { childList: true, subtree: true });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('.card').forEach(function(card) {
+    const priceEl = card.querySelector('.card-price, .card-text');
+    if (priceEl) {
+      const price = parseInt(priceEl.textContent.replace(/[$.]/g, ''));
+      if (!isNaN(price) && price >= 200000) {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('card-wrapper');
+        card.parentNode.insertBefore(wrapper, card);
+        wrapper.appendChild(card);
+        const badge = document.createElement('div');
+        badge.className = 'envio-gratis-badge';
+        badge.textContent = 'Envío Gratis';
+        wrapper.appendChild(badge);
+      }
+    }
+  });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('.faq-question').forEach(function(question) {
+    question.addEventListener('click', function() {
+      const item = this.parentElement;
+      item.classList.toggle('active');
+    });
+  });
+});
+</script>
+<div class="sobre-contacto" style="background-color:#343a40; color:#fff; padding: 40px 20px; margin-top: 60px;">
+<div class="container">
+<div class="row">
+<div class="col-md-6 mb-4">
+<h4 class="fw-bold mb-3">Sobre Nosotros</h4>
+<p>En ThisDrugs nos especializamos en semillas en tendencia ofreciendo lo mejor de alta calidad con envío a todo el país.</p>
+</div>
+<div class="col-md-6">
+<h4 class="fw-bold mb-3">Contáctanos</h4>
+<p><i class="bi bi-geo-alt-fill"></i> Argentina</p>
+<p><i class="bi bi-telegram"></i>@thisdrugs1</p>
+</div>
+</div>
+</div>
+</div>
+<footer style="background-color:#343a40; text-align:center; padding: 20px; font-size:0.9rem; color:#ccc; margin-top:0;">
+<img alt="ThisDrugs" src="logo.png" style="max-height:40px; display:block; margin:0 auto 10px auto;"/>
+<p>© ThisDrugs 2026 - Todos los derechos reservados</p>
+</footer>
+<!-- Botón flotante de Telegram -->
+<a class="telegram-float" href="https://t.me/thisdrugs1" target="_blank">
+  <i class="bi bi-telegram"></i>
+</a>
+
+<style>
+.telegram-float {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  bottom: 20px;
+  right: 20px;
+  /* Color azul oficial de Telegram */
+  background: #24A1DE; 
+  color: #fff;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.telegram-float:hover {
+  transform: scale(1.1);
+  background: #1d82b3; /* Un azul más profundo al pasar el mouse */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+  color: #fff;
+}
+   /* TARJETAS DE PRODUCTO ÉPICAS */
+.card {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 22px !important;
+  background: #ffffff !important;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
+}
+
+/* Efecto al pasar el mouse sobre la tarjeta */
+.card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(46, 204, 113, 0.2) !important; /* Brillo verde suave */
+  border-color: #2ecc71 !important;
+}
+
+/* Zoom en la imagen al hacer hover */
+.card-img-top {
+  transition: transform 0.5s ease;
+  height: 220px;
+  object-fit: cover;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.1);
+}
+
+/* Contenedor de la imagen para que el zoom no se salga de la tarjeta */
+.card-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+
+/* Título y Precio */
+.card-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700 !important;
+  color: #1a1a1a;
+  margin-top: 10px;
+}
+
+.text-success.fw-bold {
+  font-size: 1.3rem;
+  letter-spacing: -0.5px;
+  color: #27ae60 !important;
+}
+/* ETIQUETA ROJA (Nuevo, Épico, Oferta) - Arriba a la Izquierda */
+.badge-epico {
+  position: absolute;
+  top: 10px;
+  left: 5px;
+  background: linear-gradient(135deg, #ff416c, #ff4b2b); /* Rojo Épico */
+  color: white !important;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  z-index: 30; /* Más arriba que todo */
+  text-transform: uppercase;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  pointer-events: none; /* Para que no moleste al hacer click en la foto */
+}
+
+/* ETIQUETA DE ENVÍO GRATIS - Arriba a la Derecha */
+.envio-gratis-badge {
+  position: absolute;
+  top: 50px;
+  right: 70px; /* Movida a la derecha */
+  background: linear-gradient(135deg, #2ecc71, #27ae60); /* Verde original */
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 8px;
+  z-index: 25;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Ajuste para que la imagen no las tape */
+.card-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const pedidoData = localStorage.getItem("pedidoPendiente");
+  if (pedidoData) {
+    const pedido = JSON.parse(pedidoData);
+    const ahora = new Date();
+    const expira = new Date(pedido.expira);
+
+    if (ahora < expira) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Pedido pendiente',
+        html: `<b>Código:</b> #${pedido.codigo}<br>
+               <small>Este pedido se encuentra en estado <b>PENDIENTE</b>.</small><br>
+               <small>Expira a las <b>${expira.toLocaleTimeString()}</b></small>`,
+        confirmButtonText: 'Descargar Factura',
+        cancelButtonText: 'Cerrar',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#6c757d',
+        customClass: {
+          title: 'swal2-title',
+          htmlContainer: 'swal2-html-container',
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-secondary'
+        },
+        buttonsStyling: false
+      }).then(result => {
+        if (result.isConfirmed) {
+          generarFacturaDesdePedido(pedido);
+        }
+      });
+    } else {
+      localStorage.removeItem("pedidoPendiente");
+    }
+  }
+});
+
+function generarFacturaDesdePedido(pedido) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const fechaStr = new Date(pedido.fecha).toLocaleString();
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.setTextColor(40, 40, 40);
+  doc.text("ThisDrugs", 20, 20);
+
+  doc.setFontSize(12);
+  doc.setTextColor(100);
+  doc.text(`Fecha: ${fechaStr}`, 150, 20);
+  doc.text(`Pedido: #${pedido.codigo}`, 150, 28);
+  doc.setDrawColor(200);
+  doc.line(20, 35, 190, 35);
+
+  // Tabla productos
+  doc.setFontSize(14);
+  doc.setTextColor(40, 40, 40);
+  doc.text("Detalle de compra:", 20, 45);
+  doc.setFontSize(11);
+  let startY = 55;
+  doc.setFillColor(230, 230, 230);
+  doc.rect(20, startY, 170, 8, "F");
+  doc.text("Producto", 22, startY + 6);
+  doc.text("Precio", 160, startY + 6);
+  startY += 12;
+  let total = 0;
+  pedido.carrito.forEach(p => {
+    doc.text(p.titulo, 22, startY);
+    doc.text(p.precio, 160, startY);
+    startY += 8;
+    total += parseFloat(p.precio.replace(/[^0-9]/g, ""));
+  });
+  let envio = parseFloat(localStorage.getItem("envioPrecio") || "0");
+  let final = total + envio;
+  doc.line(20, startY, 190, startY);
+  startY += 10;
+  doc.text(`Subtotal: $${total}`, 140, startY);
+  startY += 7;
+  doc.text(`Envío: $${envio}`, 140, startY);
+  startY += 7;
+  doc.setFont("helvetica", "bold");
+  doc.text(`Total: $${final}`, 140, startY);
+
+  // Datos comprador
+  startY += 20;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("Datos del comprador", 20, startY);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  startY += 10;
+  Object.keys(pedido.comprador).forEach(key => {
+    doc.text(`${key.replace("dato","")}: ${pedido.comprador[key]}`, 22, startY);
+    startY += 6;
+  });
+
+  startY += 10;
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(200, 0, 0);
+  doc.text("ESTADO: PAGO PENDIENTE", 20, startY);
+
+  doc.setFontSize(10);
+  doc.setTextColor(50);
+  doc.text("Gracias por confiar en ThisDrugs", 105, 280, { align: "center" });
+  doc.setTextColor(37, 211, 102);
+  doc.save(`Factura_${pedido.codigo}.pdf`);
+}
+</script>
+<script>document.addEventListener('DOMContentLoaded', function(){ mostrarCategoria('inicio'); });</script>
+<!-- Botón de seguimiento al lado del carrito -->
+
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .tracking .circle {
+    width: 45px; height: 45px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    background: #ddd; color: white;
+    margin: 0 auto 6px;
+  }
+  .tracking .circle.active { background: orange; }
+  .tracking .circle.done { background: #28a745; }
+  .tracking p { font-size: 0.85rem; margin: 0; }
+  .tracking .line {
+    height: 4px;
+    background: #ddd;
+    align-self: center;
+    margin: 0 4px;
+  }
+</style>
+
+<script>
+  
+
+  function verSeguimiento(){
+    const codigo = document.getElementById("codigoPedidoInput").value.trim();
+    const pedido = JSON.parse(localStorage.getItem("pedidoPendiente") || "{}");
+
+    if(pedido.codigo === codigo){
+      document.getElementById("trackingContainer").style.display = "block";
+
+      // siempre queda en "Pendiente"
+      ["step1","step2","step3","step4"].forEach(id=>{
+        document.getElementById(id).className="circle";
+      });
+      document.getElementById("step1").classList.add("active");
+    } else {
+      alert("Código inválido o vencido");
+    }
+  }
+</script>
+
+<script src="productos.js"></script>
+  <div id="btnHistorialFlotante" class="btn-pedidos-flotante" data-bs-toggle="modal" data-bs-target="#modalHistorial">
+    <i class="bi bi-bag-check"></i>
+    <div class="punto-aviso"></div>
+</div>
+
+<div class="modal fade" id="modalHistorial" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; color:#000;">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold">Mis Compras (48hs)</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="listaHistorial" style="max-height: 500px; overflow-y: auto;"></div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+<style>
+.toast-alert {
+  background: rgba(30, 30, 30, 0.95);
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 12px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+}
+.toast-alert.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+.toast-alert i {
+  font-size: 1.3rem;
+}
+.cart-pulse {
+  animation: pulse 0.6s ease;
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+</style>
+<script>
+function mostrarToast(nombreProducto) {
+  const toastContainer = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast-alert';
+  toast.innerHTML = '<i class="bi bi-cart"></i> ' + nombreProducto + ' agregado al carrito';
+  toastContainer.appendChild(toast);
+  setTimeout(() => toast.classList.add('show'), 50);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+
+  const cartIcon = document.querySelector('.bi-cart');
+  if(cartIcon){
+    cartIcon.classList.add('cart-pulse');
+    setTimeout(() => cartIcon.classList.remove('cart-pulse'), 600);
+  }
+}
+
+// Buscá este bloque dinámico al final de tu index.html
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('.card').forEach(function(card) {
+    const priceEl = card.querySelector('.card-price, .card-text.text-success'); // Precio
+    const wrapper = card.querySelector('.card-wrapper'); // Contenedor de la foto
+
+    // Si el producto vale más de $200.000 y existe la foto...
+    if (priceEl && wrapper) {
+      const price = parseInt(priceEl.textContent.replace(/[$.]/g, ''));
+      
+      if (!isNaN(price) && price >= 200000) {
+        // Creamos el badge verde
+        const badgeGratis = document.createElement('div');
+        badgeGratis.className = 'envio-gratis-badge'; // Clase del CSS de arriba
+        badgeGratis.textContent = 'Envío Gratis';
+        
+        // LO IMPORTANTE: Lo metemos ADENTRO del mismo contenedor que la roja
+        wrapper.appendChild(badgeGratis);
+      }
+    }
+  });
+});
+  function toggleDetalle(id) {
+    const el = document.getElementById(`det-${id}`);
+    el.style.display = (el.style.display === "none" || el.style.display === "") ? "block" : "none";
+}
+
+function actualizarHistorial() {
+    const historial = JSON.parse(localStorage.getItem("mis_pedidos")) || [];
+    const ahora = Date.now();
+    const validos = historial.filter(p => (ahora - p.fecha) < 172800000); // 48hs
+    localStorage.setItem("mis_pedidos", JSON.stringify(validos));
+
+    document.getElementById("btnHistorialFlotante").style.display = validos.length > 0 ? "flex" : "none";
+    
+    let html = "";
+    validos.reverse().forEach(p => {
+        const fecha = new Date(p.fecha).toLocaleString('es-AR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+        html += `
+        <div style="background:#f8f9fa; padding:15px; border-radius:12px; margin-bottom:10px; border-left:5px solid #198754;">
+            <div class="d-flex justify-content-between small text-muted"><span>Confirmado</span><span>${fecha} hs</span></div>
+            <div class="fw-bold mt-1">Total: ${p.total}</div>
+            <button class="btn btn-sm btn-dark w-100 mt-2" onclick="toggleDetalle(${p.id})">Ver detalles y foto</button>
+            <div id="det-${p.id}" style="display:none; margin-top:10px; border-top:1px dashed #ccc; padding-top:10px;">
+                <p class="small text-muted" style="white-space:pre-line;">${p.detalles}</p>
+                <img src="${p.foto}" style="width:100%; border-radius:8px; margin-top:5px;">
+            </div>
+        </div>`;
+    });
+    document.getElementById("listaHistorial").innerHTML = html || '<p class="text-center text-muted">Sin pedidos recientes.</p>';
+}
+window.addEventListener('load', actualizarHistorial);
+document.getElementById('modalHistorial').addEventListener('show.bs.modal', actualizarHistorial);
+
+</script>
+<div class="faq-section container">
+<h3 class="fw-bold mb-3">Preguntas Frecuentes</h3>
+<div class="faq-item">
+<div class="faq-question">¿Cuánto tarda el envío? <span class="faq-icon">▼</span></div>
+<div class="faq-answer">Los envíos tardan entre 3 y 7 días hábiles dependiendo de tu localidad.</div>
+</div>
+<div class="faq-item">
+<div class="faq-question">¿Puedo pagar en cuotas? <span class="faq-icon">▼</span></div>
+<div class="faq-answer">Sí, aceptamos pagos en hasta 12 cuotas sin interés con tarjetas seleccionadas.</div>
+</div>
+<div class="faq-item">
+<div class="faq-question">¿los envíos son discretos? <span class="faq-icon">▼</span></div>
+<div class="faq-answer">Sí, todos nuestros envíos viajan en empaques sin logotipos ni descripciones del contenido por seguridad.</div>
+</div>
+<div class="faq-item">
+<div class="faq-question">¿Es seguro? <span class="faq-icon">▼</span></div>
+<div class="faq-answer">si,Todo es real y seguro.</div>
+</div>
+<div class="faq-item">
+<div class="faq-question">¿Dónde puedo contactarlos? <span class="faq-icon">▼</span></div>
+<div class="faq-answer">Puedes escribirnos a nuestro Telegram disponible en la sección de acerca de nosotros.</div>
+</div>
+</div>
+<!-- DATA FISCAL + MEDIOS DE PAGO -->
+<div style="
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 50px 0;
+">
+    <div style="
+        width: 100%;
+        max-width: 420px;
+        text-align: center;
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 25px 20px 18px 20px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    ">
+
+        <!-- Línea -->
+        <div style="
+            width: 60%;
+            height: 2px;
+            background-color: #e0e0e0;
+            margin: 0 auto 18px auto;
+        "></div>
+
+        <!-- Imagen Data Fiscal -->
+        <a href="https://www.afip.gob.ar" target="_blank" style="display:inline-block;">
+            <img src="DATAWEB.jpg" alt="Data Fiscal"
+                 style="
+                    width: 130px;
+                    height: auto;
+                    display: block;
+                    margin: 0 auto 10px auto;
+                 ">
+        </a>
+
+        <!-- Texto legal -->
+        <p style="
+            font-size: 13px;
+            color: #666;
+            margin: 0 0 14px 0;
+        ">
+            Información fiscal conforme normativa AFIP
+        </p>
+
+        <!-- Medios de pago -->
+        <div style="
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #777;
+            line-height: 1.6;
+        ">
+            <strong style="color:#555;">Medios de pago aceptados</strong><br>
+            Tarjeta de crédito y débito · cripto<br>
+            <span style="color:#999;">Hasta 12 cuotas sin interés</span>
+        </div>
+
+    </div>
+</div>

